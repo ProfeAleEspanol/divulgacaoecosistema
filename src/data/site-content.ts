@@ -268,12 +268,22 @@ export const siteContent = {
     title: "Nei Maldaner",
     role: "Fundador do Ecossistema INEMA",
     description:
-      "Nei Maldaner atua no encontro entre Inteligência Artificial, comportamento, estratégia e execução. Seu trabalho é ajudar pessoas e organizações a compreender possibilidades, organizar ideias e utilizar tecnologia para construir soluções aplicáveis.",
-    bullets: [
+      "Nei Maldaner atua no encontro entre Inteligência Artificial, comportamento, estratégia e execução. Sua experiência está na prática: testar tecnologias, entender possibilidades, conectar ferramentas e ajudar pessoas e organizações a transformar conhecimento em construção.",
+    experienceSummary:
+      "A autoridade do Nei não está em promessas prontas, mas na rotina de pesquisa, experimentação, ensino, mentoria e aplicação real de tecnologia em projetos, produtos, processos e experiências de aprendizagem.",
+    experienceItems: [
+      "fundador do Ecossistema INEMA",
       "pesquisador, criador e experimentador de tecnologias",
       "profissional focado na aplicação prática da Inteligência Artificial",
       "mentor de projetos, produtos e processos",
-      "responsável por estudos, lives, cursos, comunidades e experiências de aprendizagem do INEMA",
+      "experiência em explorar ferramentas, conectar tecnologias e transformar ideias em protótipos e soluções",
+      "responsável por conduzir estudos, lives, cursos, comunidades e experiências de aprendizagem do INEMA",
+    ],
+    bullets: [
+      "testar novas tecnologias e traduzir possibilidades em caminhos práticos",
+      "organizar ideias para que virem escopo, protótipo, processo ou solução",
+      "aproximar pessoas técnicas e não técnicas da construção com IA",
+      "conduzir aprendizagem com foco em aplicação, repertório e continuidade",
     ],
   },
   ecosystem: [

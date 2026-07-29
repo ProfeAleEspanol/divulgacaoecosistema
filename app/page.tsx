@@ -337,9 +337,24 @@ function FounderSection() {
             {siteContent.nei.role}
           </p>
           <p className="mt-5 text-lg font-semibold leading-8 text-graphite-800">
-            Autoridade construída na prática: testar tecnologias, identificar
-            possibilidades e transformar conhecimento em construção.
+            {siteContent.nei.experienceSummary}
           </p>
+          <div className="mt-7 border-t border-graphite-900/10 pt-6">
+            <p className="text-sm font-bold uppercase tracking-[0.16em] text-graphite-500">
+              Experiência prática
+            </p>
+            <ul className="mt-4 grid gap-3">
+              {siteContent.nei.experienceItems.map((item) => (
+                <li
+                  key={item}
+                  className="flex gap-3 text-sm font-semibold leading-6 text-graphite-700"
+                >
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-inema-gold" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           {siteContent.nei.bullets.map((item) => (
