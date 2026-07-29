@@ -382,8 +382,7 @@ export const siteContent = {
   },
   finalCta: {
     title: "Leve o Ecossistema INEMA para sua empresa.",
-    description:
-      "Use esta página como apresentação inicial. Para formatos comerciais, treinamentos, imersivos e projetos com IA, fale com a Tiza.",
+    description: "",
     button: "Falar com a Tiza",
   },
 } as const;

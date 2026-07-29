@@ -459,11 +459,6 @@ function ContactSection() {
           <p className="mt-5 text-lg leading-8 text-graphite-700">
             {siteContent.form.description}
           </p>
-          <div className="mt-8 rounded-[8px] border border-graphite-900/10 bg-inema-mist p-5">
-            <p className="text-sm font-semibold leading-6 text-graphite-700">
-              {siteContent.finalCta.description}
-            </p>
-          </div>
           <a
             href={`mailto:${siteContent.contacts.email}`}
             className="mt-8 inline-flex rounded-[8px] border border-graphite-900/15 px-5 py-3 text-sm font-bold text-graphite-950 hover:border-inema-blue hover:text-inema-blue"
