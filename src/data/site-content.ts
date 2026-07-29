@@ -75,7 +75,7 @@ export const siteContent = {
     subtitle:
       "Uma estrutura de educação, conteúdo, comunidade, experiências presenciais e construção de soluções para empresas e profissionais que querem aplicar IA com clareza e resultado.",
     support: "Educação | Comunidade | Imersivos | Projetos com IA",
-    primaryCta: "Falar com a Tiza",
+    primaryCta: "Ver contato comercial",
     secondaryCta: "Conhecer o ecossistema",
     variants: [
       {
