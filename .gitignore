@@ -3,6 +3,7 @@ node_modules
 out
 dist
 artifacts
+.vercel
 dev-server.pid
 tsconfig.tsbuildinfo
 .env
@@ -12,3 +13,5 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+
+.vercel
