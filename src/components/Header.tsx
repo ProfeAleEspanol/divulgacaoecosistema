@@ -44,7 +44,7 @@ export function Header() {
             href="#formulario"
             className="rounded-[8px] bg-graphite-950 px-5 py-3 text-sm font-bold text-white shadow-soft transition hover:bg-inema-blue"
           >
-            Quero participar
+            {siteContent.hero.primaryCta}
           </a>
         </div>
 
@@ -93,7 +93,7 @@ export function Header() {
               className="mt-2 rounded-[8px] bg-graphite-950 px-5 py-3 text-center text-sm font-bold text-white"
               onClick={() => setIsOpen(false)}
             >
-              Quero participar
+              {siteContent.hero.primaryCta}
             </a>
           </nav>
         </div>

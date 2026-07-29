@@ -1,18 +1,23 @@
-# Imersivos INEMA
+# Ecossistema INEMA
 
-Página institucional e comercial dos Imersivos Presenciais do Ecossistema INEMA.
+Página institucional e comercial para concentrar as frentes do Ecossistema INEMA e apresentar a proposta para empresas.
 
 ## Onde alterar conteúdo
 
-- Datas, valores, vagas, contatos, links e status das inscrições: `src/data/site-content.ts`
-- Integração real do formulário: configure `NEXT_PUBLIC_INTEREST_API_URL`
+- Textos, contatos, links, CTAs e perguntas frequentes: `src/data/site-content.ts`
 - URL pública para metadados sociais: configure `NEXT_PUBLIC_SITE_URL`
-- Imagem provisória do hero: `public/images/imersivo-presencial-provisorio.png`
+- Integração real do formulário, se houver CRM/webhook/API: configure `NEXT_PUBLIC_INTEREST_API_URL`
+- Imagem principal: `public/images/imersivo-presencial-provisorio.png`
 - Favicon provisório: `public/brand/favicon-inema-placeholder.svg`
 
-## Formulário
+## Contato
 
-Sem `NEXT_PUBLIC_INTEREST_API_URL`, o formulário funciona em modo demonstração e salva os dados no `localStorage` do navegador. Com a variável configurada, ele envia um `POST` com JSON para a API informada.
+O contato comercial principal está configurado para a Tiza:
+
+- WhatsApp: `+55 54 99642-2265`
+- E-mail: `inematds@gmail.com`
+
+Sem `NEXT_PUBLIC_INTEREST_API_URL`, o formulário abre o WhatsApp com os dados preenchidos para envio manual. Com a variável configurada, ele envia um `POST` com JSON para a API informada.
 
 ## Comandos
 

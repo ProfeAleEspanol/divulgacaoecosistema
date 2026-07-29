@@ -4,6 +4,7 @@ import { InterestForm } from "@/components/InterestForm";
 import { SectionShell } from "@/components/SectionShell";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { LinkKey, siteContent } from "@/data/site-content";
+import { getWhatsAppHref } from "@/lib/whatsapp";
 
 export default function Home() {
   return (
@@ -11,18 +12,16 @@ export default function Home() {
       <Header />
       <main id="topo">
         <Hero />
-        <IntroSection />
-        <ProblemsSection />
-        <ValueSection />
+        <OverviewSection />
+        <BusinessSection />
         <MethodSection />
-        <AudienceSection />
         <ProjectsSection />
-        <VibeCodeSection />
-        <CanelaSection />
-        <NeiSection />
+        <PracticalBuildSection />
+        <PresenceSection />
+        <FounderSection />
         <EcosystemSection />
         <FaqSection />
-        <FormSection />
+        <ContactSection />
       </main>
       <Footer />
       <WhatsAppButton />
@@ -57,13 +56,19 @@ function Hero() {
               {siteContent.hero.primaryCta}
             </a>
             <a
-              href="#imersivos"
+              href="#ecossistema"
               className="rounded-[8px] border border-graphite-900/15 bg-white px-6 py-4 text-center text-base font-bold text-graphite-950 shadow-line transition hover:border-inema-blue hover:text-inema-blue"
             >
               {siteContent.hero.secondaryCta}
             </a>
           </div>
-          <EditionNotice />
+          <div className="mt-10 rounded-[8px] border border-graphite-900/10 bg-white/86 p-5 shadow-line">
+            <p className="text-sm font-semibold leading-6 text-graphite-700">
+              Uma apresentação única para empresas entenderem o que o INEMA já
+              reúne: educação, comunidade, treinamentos, imersivos, conteúdo e
+              construção prática com Inteligência Artificial.
+            </p>
+          </div>
         </div>
 
         <figure className="relative min-w-0">
@@ -89,40 +94,11 @@ function Hero() {
   );
 }
 
-function EditionNotice() {
-  const details = [
-    siteContent.edition.name ? `Edição: ${siteContent.edition.name}` : null,
-    siteContent.edition.theme ? `Tema: ${siteContent.edition.theme}` : null,
-    siteContent.edition.dates ? `Datas: ${siteContent.edition.dates}` : null,
-    siteContent.edition.seats ? `Vagas: ${siteContent.edition.seats}` : null,
-    siteContent.edition.investment
-      ? `Investimento: ${siteContent.edition.investment}`
-      : null,
-  ].filter(Boolean);
-
-  return (
-    <div className="mt-10 rounded-[8px] border border-graphite-900/10 bg-white/86 p-5 shadow-line">
-      {siteContent.edition.active && details.length > 0 ? (
-        <div className="grid gap-2 text-sm font-semibold text-graphite-700">
-          {details.map((detail) => (
-            <span key={detail}>{detail}</span>
-          ))}
-        </div>
-      ) : (
-        <p className="text-sm font-semibold leading-6 text-graphite-700">
-          Novas experiências estão sendo preparadas. Entre na lista de interesse
-          para receber as próximas datas.
-        </p>
-      )}
-    </div>
-  );
-}
-
-function IntroSection() {
+function OverviewSection() {
   return (
     <SectionShell
-      id="imersivos"
-      eyebrow="O que são"
+      id="visao-geral"
+      eyebrow="Visão geral"
       title={siteContent.quickIntro.title}
       description={siteContent.quickIntro.text.join(" ")}
       tone="mist"
@@ -153,42 +129,48 @@ function IntroSection() {
   );
 }
 
-function ProblemsSection() {
+function BusinessSection() {
   return (
     <SectionShell
-      id="problemas"
-      eyebrow="Ponto de partida"
-      title="Quando a ideia existe, mas ainda falta estrutura"
-      description="O imersivo foi pensado para quem precisa trocar dispersão por foco, ferramenta solta por método e intenção por construção."
-    >
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {siteContent.problems.map((problem) => (
-          <SimpleCard key={problem} title={problem} tone="subtle" />
-        ))}
-      </div>
-    </SectionShell>
-  );
-}
-
-function ValueSection() {
-  return (
-    <SectionShell
-      eyebrow="Proposta de valor"
-      title="Você chega com um projeto e trabalha para sair com clareza, estrutura e uma primeira versão aplicável."
-      description="Não é uma promessa de empresa pronta, produto finalizado ou resultado financeiro garantido. O avanço depende do ponto de partida, da complexidade e da participação de cada pessoa."
+      id="empresas"
+      eyebrow="Para empresas"
+      title="Uma estrutura para educar pessoas, organizar oportunidades e construir aplicações reais com IA."
+      description="O INEMA ajuda empresas a sair da curiosidade dispersa e avançar para diagnóstico, capacitação, comunidade, imersão e execução prática."
       tone="dark"
     >
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {siteContent.valueItems.map((item) => (
-          <div
-            key={item}
-            className="rounded-[8px] border border-white/12 bg-white/[0.04] p-6"
-          >
-            <p className="text-base font-semibold leading-7 text-white/88">
-              {item}
-            </p>
+      <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr]">
+        <div>
+          <h3 className="text-xl font-bold text-white">
+            Quando o INEMA pode ajudar
+          </h3>
+          <div className="mt-5 grid gap-4">
+            {siteContent.problems.map((problem) => (
+              <div
+                key={problem}
+                className="rounded-[8px] border border-white/12 bg-white/[0.04] p-5"
+              >
+                <p className="font-semibold leading-7 text-white/86">
+                  {problem}
+                </p>
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
+        <div>
+          <h3 className="text-xl font-bold text-white">O que o ecossistema entrega</h3>
+          <div className="mt-5 grid gap-4 sm:grid-cols-2">
+            {siteContent.valueItems.map((item) => (
+              <div
+                key={item}
+                className="rounded-[8px] border border-white/12 bg-white/[0.04] p-5"
+              >
+                <p className="text-sm font-semibold leading-6 text-white/86">
+                  {item}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </SectionShell>
   );
@@ -198,9 +180,9 @@ function MethodSection() {
   return (
     <SectionShell
       id="metodo"
-      eyebrow="Como funciona"
-      title="Três movimentos para sair da intenção e entrar na execução"
-      description="As atividades exatas podem variar conforme o tema de cada edição, mas a lógica central combina clareza, construção e continuidade."
+      eyebrow="Método"
+      title="Três movimentos para transformar IA em prática"
+      description="As frentes podem variar conforme a empresa, mas a lógica central combina clareza, educação e construção contínua."
       tone="mist"
     >
       <div className="grid gap-6 lg:grid-cols-3">
@@ -215,10 +197,15 @@ function MethodSection() {
             <h3 className="mt-4 text-2xl font-bold text-graphite-950">
               {movement.title}
             </h3>
-            <p className="mt-4 leading-7 text-graphite-700">{movement.description}</p>
+            <p className="mt-4 leading-7 text-graphite-700">
+              {movement.description}
+            </p>
             <ul className="mt-6 grid gap-3">
               {movement.items.map((item) => (
-                <li key={item} className="flex gap-3 text-sm font-semibold text-graphite-700">
+                <li
+                  key={item}
+                  className="flex gap-3 text-sm font-semibold text-graphite-700"
+                >
                   <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-inema-gold" />
                   {item}
                 </li>
@@ -231,60 +218,20 @@ function MethodSection() {
   );
 }
 
-function AudienceSection() {
-  return (
-    <SectionShell
-      id="publico"
-      eyebrow="Para quem"
-      title="Pessoas que querem construir, decidir e avançar com acompanhamento"
-    >
-      <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-        <div>
-          <h3 className="text-xl font-bold text-graphite-950">Indicado para</h3>
-          <div className="mt-5 flex flex-wrap gap-3">
-            {siteContent.audience.map((item) => (
-              <span
-                key={item}
-                className="rounded-[8px] border border-graphite-900/10 bg-white px-4 py-3 text-sm font-semibold text-graphite-700 shadow-line"
-              >
-                {item}
-              </span>
-            ))}
-          </div>
-        </div>
-        <div className="rounded-[8px] border border-graphite-900/10 bg-graphite-50 p-7">
-          <h3 className="text-xl font-bold text-graphite-950">
-            Talvez não seja para você se
-          </h3>
-          <ul className="mt-5 grid gap-4">
-            {siteContent.notFor.map((item) => (
-              <li key={item} className="flex gap-3 leading-7 text-graphite-700">
-                <span className="mt-3 h-0.5 w-4 shrink-0 bg-inema-gold" />
-                {item}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    </SectionShell>
-  );
-}
-
 function ProjectsSection() {
   return (
     <SectionShell
       id="projetos"
-      eyebrow="Projetos possíveis"
-      title="Exemplos de construções que podem orientar uma edição"
-      description="Os exemplos abaixo ajudam a visualizar caminhos possíveis, mas não representam garantia de conclusão durante o evento."
-      tone="mist"
+      eyebrow="Caminhos possíveis"
+      title="O ecossistema conecta educação, comunidade e construção"
+      description="A mesma estrutura pode apoiar desde um primeiro contato com IA até programas de capacitação, imersivos e projetos aplicados."
     >
-      <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
-        <div className="rounded-[8px] bg-white p-7 shadow-line">
-          <h3 className="text-xl font-bold text-graphite-950">Temas de imersivos</h3>
+      <div className="grid gap-8 lg:grid-cols-[0.82fr_1.18fr]">
+        <div className="rounded-[8px] bg-graphite-950 p-7 text-white shadow-soft">
+          <h3 className="text-xl font-bold">Frentes do INEMA</h3>
           <div className="mt-5 grid gap-3">
             {siteContent.immersiveTypes.map((item) => (
-              <span key={item} className="text-sm font-semibold leading-6 text-graphite-700">
+              <span key={item} className="text-sm font-semibold leading-6 text-white/80">
                 {item}
               </span>
             ))}
@@ -292,7 +239,7 @@ function ProjectsSection() {
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {siteContent.projectExamples.map((project) => (
-            <SimpleCard key={project} title={project} />
+            <SimpleCard key={project} title={project} tone="subtle" />
           ))}
         </div>
       </div>
@@ -300,13 +247,14 @@ function ProjectsSection() {
   );
 }
 
-function VibeCodeSection() {
+function PracticalBuildSection() {
   return (
     <SectionShell
-      id="vibe-code"
-      eyebrow="Formato em destaque"
+      id="construcao"
+      eyebrow="Execução"
       title={siteContent.vibeCode.title}
       description={siteContent.vibeCode.description}
+      tone="mist"
     >
       <div className="grid gap-8 lg:grid-cols-[0.86fr_1.14fr]">
         <div className="rounded-[8px] bg-graphite-950 p-8 text-white angled-lines">
@@ -314,14 +262,14 @@ function VibeCodeSection() {
             {siteContent.vibeCode.plainLanguage}
           </p>
           <p className="mt-6 text-sm leading-6 text-white/72">
-            A programação pode ser adaptada conforme a edição, o tema e o ponto
-            de partida dos participantes.
+            O formato pode ser ajustado para palestra aplicada, treinamento,
+            imersivo, mentoria de projeto ou construção acompanhada.
           </p>
           <a
             href="#formulario"
             className="mt-8 inline-flex rounded-[8px] bg-inema-gold px-5 py-3 text-sm font-bold text-graphite-950 transition hover:bg-white"
           >
-            Quero tirar meu projeto do papel
+            Quero conversar sobre minha empresa
           </a>
         </div>
         <div className="grid gap-5">
@@ -349,11 +297,11 @@ function VibeCodeSection() {
   );
 }
 
-function CanelaSection() {
+function PresenceSection() {
   return (
     <SectionShell
-      id="canela"
-      eyebrow="Experiência presencial"
+      id="presencial"
+      eyebrow="Presencial"
       title={siteContent.canela.title}
       description={siteContent.canela.description}
       tone="dark"
@@ -374,7 +322,7 @@ function CanelaSection() {
   );
 }
 
-function NeiSection() {
+function FounderSection() {
   return (
     <SectionShell
       id="nei"
@@ -404,16 +352,23 @@ function NeiSection() {
 }
 
 function EcosystemSection() {
+  const whatsappHref = getWhatsAppHref(
+    siteContent.contacts.whatsappNumber,
+    "Olá, Tiza. Quero acessar ou entender melhor as frentes do Ecossistema INEMA.",
+  );
+
   return (
     <SectionShell
       id="ecossistema"
-      eyebrow="Continuidade"
-      title="O imersivo faz parte do Ecossistema INEMA"
-      description="Depois da experiência presencial, o participante entende melhor como continuar estudando, acompanhando conteúdos e desenvolvendo seus projetos nos ambientes do INEMA."
+      eyebrow="Ecossistema"
+      title="As frentes que concentram o movimento INEMA"
+      description="A empresa pode começar pelo conteúdo aberto, aprofundar nas trilhas, acompanhar a comunidade ou conversar sobre um formato personalizado."
     >
       <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
         {siteContent.ecosystem.map((item) => {
           const href = siteContent.links[item.hrefKey as LinkKey];
+          const fallbackHref = href ?? whatsappHref;
+
           return (
             <article
               key={item.name}
@@ -423,12 +378,14 @@ function EcosystemSection() {
               <p className="mt-4 text-sm leading-7 text-graphite-700">
                 {item.description}
               </p>
-              {href ? (
+              {fallbackHref ? (
                 <a
                   className="mt-5 inline-flex text-sm font-bold text-inema-blue hover:text-graphite-950"
-                  href={href}
+                  href={fallbackHref}
+                  target="_blank"
+                  rel="noreferrer"
                 >
-                  Acessar
+                  {href ? "Acessar" : "Solicitar acesso"}
                 </a>
               ) : null}
             </article>
@@ -436,8 +393,8 @@ function EcosystemSection() {
         })}
       </div>
       <p className="mt-6 text-sm leading-6 text-graphite-600">
-        Acessos e benefícios incluídos dependem da edição e devem ser
-        confirmados no momento da inscrição.
+        Alguns acessos e formatos dependem do objetivo da empresa e devem ser
+        alinhados em conversa com a equipe INEMA.
       </p>
     </SectionShell>
   );
@@ -448,7 +405,7 @@ function FaqSection() {
     <SectionShell
       id="faq"
       eyebrow="Perguntas frequentes"
-      title="Respostas diretas antes de entrar na lista"
+      title="Respostas diretas antes da primeira conversa"
       tone="mist"
     >
       <div className="grid gap-4 lg:grid-cols-2">
@@ -473,13 +430,13 @@ function FaqSection() {
   );
 }
 
-function FormSection() {
+function ContactSection() {
   return (
     <section id="formulario" className="scroll-mt-24 bg-white py-20 sm:py-24">
       <div className="mx-auto grid max-w-7xl gap-10 px-5 sm:px-6 lg:grid-cols-[0.85fr_1.15fr] lg:px-8">
         <div>
           <p className="mb-4 text-sm font-bold uppercase tracking-[0.18em] text-inema-blue">
-            Próximo passo
+            Contato comercial
           </p>
           <h2 className="text-balance text-3xl font-bold tracking-normal text-graphite-950 sm:text-4xl lg:text-5xl">
             {siteContent.form.title}
@@ -493,10 +450,10 @@ function FormSection() {
             </p>
           </div>
           <a
-            href="#formulario"
+            href={`mailto:${siteContent.contacts.email}`}
             className="mt-8 inline-flex rounded-[8px] border border-graphite-900/15 px-5 py-3 text-sm font-bold text-graphite-950 hover:border-inema-blue hover:text-inema-blue"
           >
-            Quero levar esta experiência para minha empresa
+            {siteContent.contacts.email}
           </a>
         </div>
         <InterestForm />
@@ -510,9 +467,11 @@ function Footer() {
     <footer className="bg-graphite-950 py-10 text-white">
       <div className="mx-auto flex max-w-7xl flex-col gap-6 px-5 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
         <div>
-          <p className="text-base font-bold tracking-[0.16em]">{siteContent.brand.name}</p>
+          <p className="text-base font-bold tracking-[0.16em]">
+            {siteContent.brand.name}
+          </p>
           <p className="mt-2 text-sm text-white/62">
-            Inteligência Artificial, estratégia e construção prática.
+            Inteligência Artificial, educação, comunidade e construção prática.
           </p>
         </div>
         <div className="flex flex-wrap gap-4 text-sm font-semibold text-white/72">

@@ -7,7 +7,13 @@ import { InterestLead, submitInterestLead } from "@/lib/submit-interest";
 type FormStatus =
   | { state: "idle"; message: "" }
   | { state: "submitting"; message: string }
-  | { state: "success"; message: string; mode: "api" | "local"; reference: string }
+  | {
+      state: "success";
+      message: string;
+      mode: "api" | "whatsapp";
+      reference: string;
+      href?: string;
+    }
   | { state: "error"; message: string };
 
 const initialStatus: FormStatus = { state: "idle", message: "" };
@@ -42,14 +48,15 @@ export function InterestForm() {
 
     try {
       const result = await submitInterestLead(payload);
+      if (result.mode === "whatsapp" && result.href) {
+        window.open(result.href, "_blank", "noopener,noreferrer");
+      }
       setStatus({
         state: "success",
-        message:
-          result.mode === "api"
-            ? siteContent.form.successMessage
-            : `${siteContent.form.successMessage} ${result.message}`,
+        message: siteContent.form.successMessage,
         mode: result.mode,
         reference: result.reference,
+        href: result.href,
       });
       form.reset();
     } catch (error) {
@@ -85,18 +92,18 @@ export function InterestForm() {
           required
         />
         <Field
-          label="Cidade e estado"
+          label="Empresa ou instituição"
           name="cityState"
-          autoComplete="address-level2"
+          autoComplete="organization"
           required
         />
         <Field
-          label="Profissão ou área de atuação"
+          label="Cargo ou área de atuação"
           name="profession"
           autoComplete="organization-title"
           required
         />
-        <Select label="Nível de experiência com IA" name="aiLevel" required>
+        <Select label="Nível atual de uso de IA" name="aiLevel" required>
           {siteContent.form.aiLevels.map((option) => (
             <option key={option} value={option}>
               {option}
@@ -106,21 +113,21 @@ export function InterestForm() {
       </div>
 
       <TextArea
-        label="Projeto que deseja desenvolver"
+        label="O que sua empresa quer desenvolver ou resolver com IA?"
         name="project"
         rows={4}
         required
       />
 
       <div className="grid gap-5 md:grid-cols-2">
-        <Select label="Tipo de imersivo de maior interesse" name="immersiveInterest" required>
+        <Select label="Frente de maior interesse" name="immersiveInterest" required>
           {siteContent.form.immersiveInterests.map((option) => (
             <option key={option} value={option}>
               {option}
             </option>
           ))}
         </Select>
-        <Select label="Preferência de período" name="periodPreference" required>
+        <Select label="Melhor momento para conversar" name="periodPreference" required>
           {siteContent.form.periodPreferences.map((option) => (
             <option key={option} value={option}>
               {option}
@@ -129,7 +136,7 @@ export function InterestForm() {
         </Select>
       </div>
 
-      <TextArea label="Observações" name="notes" rows={3} />
+      <TextArea label="Observações ou contexto adicional" name="notes" rows={3} />
 
       <label className="flex gap-3 rounded-[8px] border border-graphite-900/10 bg-graphite-50 p-4 text-sm leading-6 text-graphite-700">
         <input
@@ -140,7 +147,8 @@ export function InterestForm() {
         />
         <span>
           Autorizo o contato da equipe INEMA pelos dados informados para receber
-          informações sobre próximas edições dos imersivos.
+          informações sobre o ecossistema, propostas, treinamentos, imersivos e
+          projetos com IA.
         </span>
       </label>
 
@@ -156,6 +164,16 @@ export function InterestForm() {
           role="status"
         >
           <p>{status.message}</p>
+          {status.state === "success" && status.mode === "whatsapp" && status.href ? (
+            <a
+              className="mt-2 inline-flex font-bold text-inema-blue hover:text-graphite-950"
+              href={status.href}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Abrir WhatsApp novamente
+            </a>
+          ) : null}
           {status.state === "success" ? (
             <p className="mt-2 font-semibold">Protocolo: {status.reference}</p>
           ) : null}
@@ -167,7 +185,7 @@ export function InterestForm() {
         type="submit"
         disabled={status.state === "submitting"}
       >
-        {status.state === "submitting" ? "Enviando..." : "Entrar na lista de interesse"}
+        {status.state === "submitting" ? "Preparando..." : "Falar com a Tiza"}
       </button>
     </form>
   );

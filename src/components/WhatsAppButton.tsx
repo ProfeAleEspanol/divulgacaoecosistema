@@ -18,7 +18,7 @@ export function WhatsAppButton() {
       target="_blank"
       rel="noreferrer"
     >
-      Falar com o INEMA
+      Falar com {siteContent.contacts.whatsappContactName}
     </a>
   );
 }

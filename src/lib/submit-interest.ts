@@ -1,3 +1,6 @@
+import { siteContent } from "@/data/site-content";
+import { getWhatsAppHref } from "@/lib/whatsapp";
+
 export type InterestLead = {
   name: string;
   whatsapp: string;
@@ -13,12 +16,11 @@ export type InterestLead = {
 };
 
 export type SubmitInterestResult = {
-  mode: "api" | "local";
+  mode: "api" | "whatsapp";
   reference: string;
   message: string;
+  href?: string;
 };
-
-const storageKey = "inema-interest-leads";
 
 function createReference() {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -28,21 +30,27 @@ function createReference() {
   return `lead-${Date.now()}`;
 }
 
-function readStoredLeads() {
-  if (typeof window === "undefined") {
-    return [];
-  }
-
-  const stored = window.localStorage.getItem(storageKey);
-  if (!stored) {
-    return [];
-  }
-
-  try {
-    return JSON.parse(stored) as unknown[];
-  } catch {
-    return [];
-  }
+function formatWhatsAppMessage(record: InterestLead & { reference: string }) {
+  return [
+    siteContent.contacts.whatsappMessage,
+    "",
+    `Protocolo: ${record.reference}`,
+    `Nome: ${record.name}`,
+    `WhatsApp: ${record.whatsapp}`,
+    `E-mail: ${record.email}`,
+    `Empresa/instituição: ${record.cityState}`,
+    `Cargo/área: ${record.profession}`,
+    `Nível de IA: ${record.aiLevel}`,
+    `Interesse: ${record.immersiveInterest}`,
+    `Momento: ${record.periodPreference}`,
+    "",
+    "Contexto:",
+    record.project,
+    "",
+    record.notes ? `Observações: ${record.notes}` : null,
+  ]
+    .filter(Boolean)
+    .join("\n");
 }
 
 export async function submitInterestLead(
@@ -53,8 +61,8 @@ export async function submitInterestLead(
   const record = { ...payload, reference, submittedAt };
   const endpoint = process.env.NEXT_PUBLIC_INTEREST_API_URL;
 
-  // Configure NEXT_PUBLIC_INTEREST_API_URL to send leads to Supabase Edge Functions,
-  // a route handler, or any HTTP API that accepts this JSON payload.
+  // Configure NEXT_PUBLIC_INTEREST_API_URL when a CRM, webhook, Supabase
+  // function, or another HTTP lead receiver is available.
   if (endpoint) {
     const response = await fetch(endpoint, {
       method: "POST",
@@ -75,15 +83,19 @@ export async function submitInterestLead(
     };
   }
 
-  if (typeof window !== "undefined") {
-    const leads = readStoredLeads();
-    window.localStorage.setItem(storageKey, JSON.stringify([...leads, record]));
+  const href = getWhatsAppHref(
+    siteContent.contacts.whatsappNumber,
+    formatWhatsAppMessage(record),
+  );
+
+  if (!href) {
+    throw new Error("Não foi possível preparar o contato pelo WhatsApp.");
   }
 
   return {
-    mode: "local",
+    mode: "whatsapp",
     reference,
-    message:
-      "Modo demonstração: os dados foram salvos neste navegador. Configure NEXT_PUBLIC_INTEREST_API_URL para envio real.",
+    href,
+    message: "Contato preparado para envio pelo WhatsApp.",
   };
 }
