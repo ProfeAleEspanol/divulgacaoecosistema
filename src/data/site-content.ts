@@ -1,10 +1,12 @@
+const assetBasePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
 export const siteContent = {
   brand: {
     name: "INEMA",
     descriptor: "Ecossistema",
     logoText: "INEMA",
     officialLogoPath: null,
-    faviconPath: "/brand/favicon-inema-placeholder.svg",
+    faviconPath: `${assetBasePath}/brand/favicon-inema-placeholder.svg`,
   },
   seo: {
     title: "Ecossistema INEMA | Inteligência Artificial aplicada a negócios",
@@ -54,7 +56,7 @@ export const siteContent = {
   },
   media: {
     heroImage: {
-      src: "/images/imersivo-presencial-provisorio.png",
+      src: `${assetBasePath}/images/imersivo-presencial-provisorio.png`,
       alt: "Pessoas trabalhando em projetos, tecnologia e Inteligência Artificial em uma experiência prática.",
       caption:
         "Educação, comunidade e construção prática com Inteligência Artificial.",

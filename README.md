@@ -19,6 +19,16 @@ O contato comercial principal está configurado para a Tiza:
 
 Sem `NEXT_PUBLIC_INTEREST_API_URL`, o formulário abre o WhatsApp com os dados preenchidos para envio manual. Com a variável configurada, ele envia um `POST` com JSON para a API informada.
 
+## Publicação
+
+O repositório publica automaticamente no GitHub Pages a cada push no branch `main`.
+
+URL esperada:
+
+```text
+https://profealeespanol.github.io/divulgacaoecosistema/
+```
+
 ## Comandos
 
 ```bash
