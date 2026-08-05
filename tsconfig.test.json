@@ -1,0 +1,21 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "noEmit": false,
+    "outDir": ".test-dist",
+    "incremental": false,
+    "isolatedModules": false,
+    "jsx": "react-jsx"
+  },
+  "include": [
+    "src/types/**/*.ts",
+    "src/data/opportunities.ts",
+    "src/data/demo-diagnosis.ts",
+    "src/lib/recommendation-engine.ts",
+    "tests/**/*.test.ts"
+  ],
+  "exclude": ["node_modules"]
+}

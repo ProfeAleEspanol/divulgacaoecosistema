@@ -3,9 +3,9 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: light;
-  --background: #fbfcfd;
-  --foreground: #111821;
+  color-scheme: dark;
+  --background: #050712;
+  --foreground: #f8fafc;
 }
 
 * {
@@ -29,7 +29,7 @@ body {
 }
 
 ::selection {
-  background: rgba(217, 179, 91, 0.35);
+  background: rgba(110, 231, 183, 0.35);
 }
 
 a {
@@ -43,22 +43,19 @@ textarea {
   font: inherit;
 }
 
+button {
+  cursor: pointer;
+}
+
+input,
+select,
+textarea {
+  color-scheme: dark;
+}
+
 :focus-visible {
-  outline: 3px solid rgba(217, 179, 91, 0.9);
+  outline: 3px solid rgba(103, 232, 249, 0.95);
   outline-offset: 3px;
-}
-
-.section-grid {
-  background-image:
-    linear-gradient(rgba(17, 47, 99, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(17, 47, 99, 0.06) 1px, transparent 1px);
-  background-size: 34px 34px;
-}
-
-.angled-lines {
-  background-image:
-    linear-gradient(120deg, rgba(111, 69, 216, 0.12), transparent 24%),
-    linear-gradient(150deg, transparent 68%, rgba(47, 145, 139, 0.14));
 }
 
 .text-balance {
@@ -73,5 +70,33 @@ textarea {
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+@media print {
+  :root {
+    color-scheme: light;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+  }
+
+  .no-print,
+  header,
+  footer {
+    display: none !important;
+  }
+
+  main,
+  section,
+  article,
+  div {
+    box-shadow: none !important;
+  }
+
+  @page {
+    margin: 14mm;
   }
 }

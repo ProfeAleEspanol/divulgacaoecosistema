@@ -1,30 +1,30 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { siteContent } from "@/data/site-content";
 
 export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
   ),
-  title: siteContent.seo.title,
-  description: siteContent.seo.description,
-  keywords: [...siteContent.seo.keywords],
+  title: "INEMA.AI MAP | Mapa de oportunidades de IA para empresas",
+  description:
+    "Diagnóstico interativo para empresários descobrirem oportunidades de automação, agentes de IA, prompts e planos de implementação em 7, 30 e 90 dias.",
+  keywords: [
+    "INEMA.AI MAP",
+    "Inteligência Artificial para empresas",
+    "diagnóstico de IA",
+    "automação para negócios",
+    "agentes de IA",
+    "mapa de oportunidades",
+  ],
   icons: {
-    icon: siteContent.brand.faviconPath,
+    icon: "/brand/favicon-inema-placeholder.svg",
   },
   openGraph: {
-    title: siteContent.seo.title,
-    description: siteContent.seo.description,
+    title: "INEMA.AI MAP",
+    description:
+      "Crie um mapa prático de automações, agentes e oportunidades de crescimento com IA.",
     locale: "pt_BR",
     type: "website",
-    images: [
-      {
-        url: siteContent.media.heroImage.src,
-        width: 1680,
-        height: 944,
-        alt: siteContent.media.heroImage.alt,
-      },
-    ],
   },
 };
 
