@@ -363,8 +363,11 @@ export function personalizePrompt(prompt: string, answers: DiagnosisAnswers) {
   return prompt.replaceAll("{empresa}", answers.companyName || "minha empresa");
 }
 
-export function generateOpportunityMap(answers: DiagnosisAnswers): OpportunityMap {
-  const opportunities = opportunityCatalog
+export function generateOpportunityMap(
+  answers: DiagnosisAnswers,
+  catalog: OpportunityTemplate[] = opportunityCatalog,
+): OpportunityMap {
+  const opportunities = catalog
     .map<RecommendedOpportunity>((template) => {
       const scored = scoreOpportunity(template, answers);
 

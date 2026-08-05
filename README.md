@@ -45,6 +45,9 @@ npm run build
 - Botões para copiar resumo, compartilhar e imprimir/salvar como PDF pelo navegador.
 - Modal de interesse para planos e implementação.
 - Funcionamento integral sem chave de IA.
+- Histórico local com mapas anteriores, retomada e exportação JSON.
+- Admin local para workspace, auth-ready, integrações e oportunidades customizadas.
+- Editor de catálogo que adiciona novos casos ao motor de recomendação dos próximos diagnósticos.
 
 ## Arquitetura
 
@@ -65,6 +68,19 @@ src/
 tests/
   recommendation-engine.test.ts  testes da lógica central
 ```
+
+## V2 local-first
+
+A versão atual já inclui uma camada inicial para evolução do produto:
+
+- Histórico: botão `Histórico` no cabeçalho lista os mapas gerados neste navegador.
+- Exportação: cada relatório e item do histórico pode ser exportado em JSON.
+- Admin: botão `Admin` abre configurações de workspace, integrações e catálogo.
+- Auth-ready: o workspace salva responsável, e-mail e modo `local` ou `supabase-ready`.
+- Integrações: campos para CRM, WhatsApp e webhook ficam salvos localmente.
+- Catálogo customizado: novas oportunidades criadas no admin entram no motor de regras nos próximos diagnósticos.
+
+Essas informações continuam no `localStorage`. Para migrar para Supabase, substitua a implementação em `src/lib/local-diagnostic-store.ts` por chamadas autenticadas e preserve os modelos em `src/types/inema-map.ts`.
 
 ## Lógica de recomendação
 
@@ -135,6 +151,14 @@ Para um deploy server-rendered com a rota de IA ativa em produção, configure:
 SERVER_BUILD=true
 OPENAI_API_KEY=sk-...
 OPENAI_MODEL=gpt-5
+```
+
+O admin local já reserva estas variáveis para uma V3 com backend:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+INEMA_IMPLEMENTATION_WEBHOOK_URL=
 ```
 
 ## Dados e privacidade

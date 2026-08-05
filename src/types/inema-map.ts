@@ -42,6 +42,20 @@ export type LeadProfile = {
   companyRole?: string;
 };
 
+export type WorkspaceProfile = {
+  workspaceName: string;
+  ownerName: string;
+  ownerEmail: string;
+  authMode: "local" | "supabase-ready";
+};
+
+export type IntegrationSettings = {
+  crmName: string;
+  webhookUrl: string;
+  whatsappNumber: string;
+  notes: string;
+};
+
 export type DiagnosisAnswers = {
   companyName: string;
   segment: BusinessSegment | "";
@@ -97,6 +111,13 @@ export type ImplementationPlan = {
   ninetyDays: string[];
 };
 
+export type AiBrief = {
+  source: "rules" | "openai";
+  firstAction: string;
+  suggestedNextActions: string[];
+  riskNotes: string[];
+};
+
 export type OpportunityMap = {
   maturityScore: number;
   executiveSummary: string;
@@ -107,4 +128,17 @@ export type OpportunityMap = {
   implementationPlan: ImplementationPlan;
   generatedAt: string;
   assumptions: string[];
+  aiBrief?: AiBrief;
+};
+
+export type MapHistoryItem = {
+  id: string;
+  companyName: string;
+  segment: string;
+  createdAt: string;
+  maturityScore: number;
+  totalEstimatedHoursSavedMonthly: number;
+  topOpportunityTitles: string[];
+  answers: DiagnosisAnswers;
+  report: OpportunityMap;
 };

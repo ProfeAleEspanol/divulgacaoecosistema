@@ -1,17 +1,26 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import { businessAreas, businessSegments } from "@/data/opportunities";
+import { businessAreas, businessSegments, opportunityCatalog } from "@/data/opportunities";
 import { clinicDemoDiagnosis, emptyDiagnosis } from "@/data/demo-diagnosis";
 import { trackEvent } from "@/lib/analytics";
 import {
   clearInemaMapStorage,
+  deleteMapHistoryItem,
+  loadCustomCatalog,
   loadDiagnosisDraft,
+  loadIntegrationSettings,
   loadLeadProfile,
+  loadMapHistory,
   loadSavedReport,
+  loadWorkspaceProfile,
+  saveCustomCatalog,
   saveDiagnosisDraft,
+  saveIntegrationSettings,
   saveLeadProfile,
+  saveMapHistoryItem,
   saveReport,
+  saveWorkspaceProfile,
 } from "@/lib/local-diagnostic-store";
 import {
   generateOpportunityMap,
@@ -23,12 +32,16 @@ import type {
   BusinessArea,
   BusinessGoal,
   DiagnosisAnswers,
+  IntegrationSettings,
   LeadProfile,
+  MapHistoryItem,
   OpportunityMap,
+  OpportunityTemplate,
   RecommendedOpportunity,
+  WorkspaceProfile,
 } from "@/types/inema-map";
 
-type ViewState = "home" | "diagnostic" | "processing" | "results";
+type ViewState = "home" | "diagnostic" | "processing" | "results" | "history" | "admin";
 
 type FilterState = {
   area: BusinessArea | "Todas";
@@ -42,6 +55,14 @@ type InterestContext =
   | { type: "opportunity"; label: string }
   | { type: "implementation"; label: string }
   | null;
+
+type CatalogDraft = {
+  title: string;
+  area: BusinessArea;
+  problem: string;
+  solution: string;
+  keywords: string;
+};
 
 const quickProblems = [
   "Atendimento demora para responder",
@@ -262,6 +283,85 @@ function getStepError(step: number, answers: DiagnosisAnswers) {
   return "";
 }
 
+function createHistoryItem(
+  answers: DiagnosisAnswers,
+  report: OpportunityMap,
+): MapHistoryItem {
+  return {
+    id: `${report.generatedAt}-${answers.companyName || "empresa"}`,
+    companyName: answers.companyName || "Empresa sem nome",
+    segment: answers.segment || "Segmento não informado",
+    createdAt: report.generatedAt,
+    maturityScore: report.maturityScore,
+    totalEstimatedHoursSavedMonthly: report.totalEstimatedHoursSavedMonthly,
+    topOpportunityTitles: report.opportunities
+      .slice(0, 3)
+      .map((opportunity) => opportunity.title),
+    answers,
+    report,
+  };
+}
+
+function createCustomOpportunity(
+  draft: CatalogDraft,
+  segments: readonly string[],
+): OpportunityTemplate {
+  const keywords = draft.keywords
+    .split(/[,;\n]/)
+    .map((keyword) => keyword.trim())
+    .filter(Boolean);
+
+  return {
+    id: `custom-${Date.now()}`,
+    title: draft.title.trim(),
+    area: draft.area,
+    problem: draft.problem.trim(),
+    solution: draft.solution.trim(),
+    agent: `Agente customizado de ${draft.area}`,
+    tools: ["ChatGPT", "Make", "Planilhas", "Base de conhecimento"],
+    prompt:
+      "Analise o problema informado, proponha um piloto enxuto, liste dados necessários, riscos e próximos passos para executar com revisão humana.",
+    baseImpact: 4,
+    effort: 3,
+    urgency: 4,
+    baseHoursSavedMonthly: 16,
+    triggerKeywords: keywords.length > 0 ? keywords : [draft.area.toLowerCase()],
+    relevantAreas: [draft.area],
+    relevantSegments: segments.filter((segment) => segment !== "Outro") as OpportunityTemplate["relevantSegments"],
+    relevantGoals: [
+      "ganhar-tempo",
+      "vender-mais",
+      "melhorar-atendimento",
+      "organizar-gestao",
+    ],
+    relevantPriorities: ["ganhar tempo", "vender mais", "melhorar atendimento"],
+    implementationSteps: [
+      "Definir escopo do piloto e dados mínimos necessários.",
+      "Criar prompt ou fluxo inicial com revisão humana obrigatória.",
+      "Testar com uma amostra pequena antes de automatizar.",
+      "Medir horas poupadas, qualidade da saída e riscos percebidos.",
+    ],
+    risks: [
+      "Caso de uso customizado precisa de validação antes de entrar em produção.",
+      "Dados sensíveis devem ser removidos ou tratados com permissão adequada.",
+    ],
+    metrics: ["tempo economizado", "taxa de erro", "adoção pela equipe", "satisfação interna"],
+    nextAction: "Transformar o caso customizado em um piloto de uma semana.",
+  };
+}
+
+function downloadJson(filename: string, data: unknown) {
+  const blob = new Blob([JSON.stringify(data, null, 2)], {
+    type: "application/json;charset=utf-8",
+  });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
 export function InemaAiMapApp() {
   const [view, setView] = useState<ViewState>("home");
   const [isHydrated, setIsHydrated] = useState(false);
@@ -272,6 +372,27 @@ export function InemaAiMapApp() {
   const [processingAnswers, setProcessingAnswers] = useState<DiagnosisAnswers | null>(null);
   const [report, setReport] = useState<OpportunityMap | null>(null);
   const [hasSavedReport, setHasSavedReport] = useState(false);
+  const [reportHistory, setReportHistory] = useState<MapHistoryItem[]>([]);
+  const [customCatalog, setCustomCatalog] = useState<OpportunityTemplate[]>([]);
+  const [workspaceProfile, setWorkspaceProfile] = useState<WorkspaceProfile>({
+    workspaceName: "INEMA.AI MAP",
+    ownerName: "",
+    ownerEmail: "",
+    authMode: "local",
+  });
+  const [integrationSettings, setIntegrationSettings] = useState<IntegrationSettings>({
+    crmName: "",
+    webhookUrl: "",
+    whatsappNumber: "",
+    notes: "",
+  });
+  const [catalogDraft, setCatalogDraft] = useState<CatalogDraft>({
+    title: "",
+    area: "Operações",
+    problem: "",
+    solution: "",
+    keywords: "",
+  });
   const [selectedOpportunity, setSelectedOpportunity] =
     useState<RecommendedOpportunity | null>(null);
   const [filters, setFilters] = useState<FilterState>({
@@ -293,6 +414,7 @@ export function InemaAiMapApp() {
     const draft = loadDiagnosisDraft();
     const savedReport = loadSavedReport();
     const savedLead = loadLeadProfile();
+    const savedHistory = loadMapHistory();
 
     if (draft) {
       setAnswers(draft);
@@ -308,6 +430,10 @@ export function InemaAiMapApp() {
       setReportUnlocked(true);
     }
 
+    setReportHistory(savedHistory);
+    setCustomCatalog(loadCustomCatalog());
+    setWorkspaceProfile(loadWorkspaceProfile());
+    setIntegrationSettings(loadIntegrationSettings());
     setIsHydrated(true);
   }, []);
 
@@ -316,6 +442,11 @@ export function InemaAiMapApp() {
       saveDiagnosisDraft(answers);
     }
   }, [answers, isHydrated]);
+
+  const activeCatalog = useMemo(
+    () => [...opportunityCatalog, ...customCatalog],
+    [customCatalog],
+  );
 
   useEffect(() => {
     if (!toast) {
@@ -338,9 +469,13 @@ export function InemaAiMapApp() {
     }, 450);
 
     const timeout = window.setTimeout(() => {
-      const generatedReport = generateOpportunityMap(processingAnswers);
+      const generatedReport = generateOpportunityMap(processingAnswers, activeCatalog);
+      const nextHistory = saveMapHistoryItem(
+        createHistoryItem(processingAnswers, generatedReport),
+      );
       setReport(generatedReport);
       saveReport(generatedReport);
+      setReportHistory(nextHistory);
       setHasSavedReport(true);
       setView("results");
       setProcessingAnswers(null);
@@ -356,7 +491,7 @@ export function InemaAiMapApp() {
       window.clearInterval(interval);
       window.clearTimeout(timeout);
     };
-  }, [processingAnswers, view]);
+  }, [activeCatalog, processingAnswers, view]);
 
   async function enhanceSummary(finalAnswers: DiagnosisAnswers, generatedReport: OpportunityMap) {
     try {
@@ -379,16 +514,24 @@ export function InemaAiMapApp() {
 
       const data = (await response.json()) as {
         executiveSummary?: string | null;
+        aiBrief?: OpportunityMap["aiBrief"] | null;
         source?: string;
       };
 
-      if (data.executiveSummary && data.executiveSummary !== generatedReport.executiveSummary) {
+      if (
+        data.aiBrief ||
+        (data.executiveSummary && data.executiveSummary !== generatedReport.executiveSummary)
+      ) {
         setReport((current) => {
           if (!current) {
             return current;
           }
 
-          const enhanced = { ...current, executiveSummary: data.executiveSummary ?? current.executiveSummary };
+          const enhanced = {
+            ...current,
+            executiveSummary: data.executiveSummary ?? current.executiveSummary,
+            aiBrief: data.aiBrief ?? current.aiBrief,
+          };
           saveReport(enhanced);
           return enhanced;
         });
@@ -418,6 +561,65 @@ export function InemaAiMapApp() {
       setView("results");
       trackEvent("saved_report_restored");
     }
+  }
+
+  function openHistoryItem(item: MapHistoryItem) {
+    setAnswers(item.answers);
+    setReport(item.report);
+    setHasSavedReport(true);
+    setView("results");
+    trackEvent("history_report_opened", { segment: item.segment });
+  }
+
+  function removeHistoryItem(id: string) {
+    const nextHistory = deleteMapHistoryItem(id);
+    setReportHistory(nextHistory);
+    setToast("Mapa removido do histórico local.");
+  }
+
+  function saveWorkspace(profile: WorkspaceProfile) {
+    saveWorkspaceProfile(profile);
+    setWorkspaceProfile(profile);
+    setToast("Workspace salvo localmente.");
+  }
+
+  function saveIntegrations(settings: IntegrationSettings) {
+    saveIntegrationSettings(settings);
+    setIntegrationSettings(settings);
+    setToast("Configurações de integração salvas localmente.");
+  }
+
+  function addCustomCatalogItem() {
+    if (
+      catalogDraft.title.trim().length < 3 ||
+      catalogDraft.problem.trim().length < 8 ||
+      catalogDraft.solution.trim().length < 8
+    ) {
+      setToast("Preencha título, problema e solução do caso customizado.");
+      return;
+    }
+
+    const nextCatalog = [
+      ...customCatalog,
+      createCustomOpportunity(catalogDraft, businessSegments),
+    ];
+    saveCustomCatalog(nextCatalog);
+    setCustomCatalog(nextCatalog);
+    setCatalogDraft({
+      title: "",
+      area: "Operações",
+      problem: "",
+      solution: "",
+      keywords: "",
+    });
+    setToast("Oportunidade customizada adicionada ao motor local.");
+  }
+
+  function removeCustomCatalogItem(id: string) {
+    const nextCatalog = customCatalog.filter((item) => item.id !== id);
+    saveCustomCatalog(nextCatalog);
+    setCustomCatalog(nextCatalog);
+    setToast("Oportunidade customizada removida.");
   }
 
   function resetDiagnosis() {
@@ -520,6 +722,19 @@ export function InemaAiMapApp() {
     trackEvent("report_shared");
   }
 
+  function exportReportJson() {
+    if (!report) {
+      return;
+    }
+
+    downloadJson(`inema-ai-map-${answers.companyName || "relatorio"}.json`, {
+      answers,
+      report,
+      exportedAt: new Date().toISOString(),
+    });
+    trackEvent("report_json_exported");
+  }
+
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#050712] text-white">
       <Header
@@ -527,6 +742,9 @@ export function InemaAiMapApp() {
         onDemo={loadDemo}
         onRestore={restoreReport}
         hasSavedReport={hasSavedReport}
+        historyCount={reportHistory.length}
+        onAdmin={() => setView("admin")}
+        onHistory={() => setView("history")}
       />
 
       {view === "home" ? (
@@ -546,6 +764,30 @@ export function InemaAiMapApp() {
 
       {view === "processing" ? <ProcessingView step={processingStep} /> : null}
 
+      {view === "history" ? (
+        <HistoryView
+          history={reportHistory}
+          onBack={() => setView("home")}
+          onOpen={openHistoryItem}
+          onRemove={removeHistoryItem}
+        />
+      ) : null}
+
+      {view === "admin" ? (
+        <AdminView
+          catalogDraft={catalogDraft}
+          customCatalog={customCatalog}
+          integrationSettings={integrationSettings}
+          workspaceProfile={workspaceProfile}
+          onAddCatalogItem={addCustomCatalogItem}
+          onBack={() => setView("home")}
+          onCatalogDraftChange={setCatalogDraft}
+          onRemoveCatalogItem={removeCustomCatalogItem}
+          onSaveIntegrations={saveIntegrations}
+          onSaveWorkspace={saveWorkspace}
+        />
+      ) : null}
+
       {view === "results" && report ? (
         <DashboardView
           answers={answers}
@@ -559,6 +801,7 @@ export function InemaAiMapApp() {
           onLeadSkip={skipLeadCapture}
           onCopy={copySummary}
           onShare={shareReport}
+          onExportJson={exportReportJson}
           onPrint={() => {
             trackEvent("report_printed");
             window.print();
@@ -581,7 +824,11 @@ export function InemaAiMapApp() {
       ) : null}
 
       {interestContext ? (
-        <InterestModal context={interestContext} onClose={() => setInterestContext(null)} />
+        <InterestModal
+          context={interestContext}
+          integrationSettings={integrationSettings}
+          onClose={() => setInterestContext(null)}
+        />
       ) : null}
 
       {toast ? (
@@ -599,12 +846,18 @@ export function InemaAiMapApp() {
 
 function Header({
   hasSavedReport,
+  historyCount,
+  onAdmin,
   onDemo,
+  onHistory,
   onRestore,
   onStart,
 }: {
   hasSavedReport: boolean;
+  historyCount: number;
+  onAdmin: () => void;
   onDemo: () => void;
+  onHistory: () => void;
   onRestore: () => void;
   onStart: () => void;
 }) {
@@ -628,12 +881,12 @@ function Header({
           <a href="#como-funciona" className="hover:text-white">
             Como funciona
           </a>
-          <a href="#planos" className="hover:text-white">
-            Planos
-          </a>
-          <a href="#faq" className="hover:text-white">
-            FAQ
-          </a>
+          <button type="button" onClick={onHistory} className="hover:text-white">
+            Histórico{historyCount > 0 ? ` (${historyCount})` : ""}
+          </button>
+          <button type="button" onClick={onAdmin} className="hover:text-white">
+            Admin
+          </button>
         </nav>
 
         <div className="flex items-center gap-2">
@@ -1419,11 +1672,379 @@ function ProcessingView({ step }: { step: number }) {
   );
 }
 
+function HistoryView({
+  history,
+  onBack,
+  onOpen,
+  onRemove,
+}: {
+  history: MapHistoryItem[];
+  onBack: () => void;
+  onOpen: (item: MapHistoryItem) => void;
+  onRemove: (id: string) => void;
+}) {
+  return (
+    <main className="min-h-[calc(100vh-74px)] bg-[#050712] py-10">
+      <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <SectionHeading
+            eyebrow="Histórico local"
+            title="Mapas gerados neste navegador"
+            description="Use esta área para comparar diagnósticos, retomar uma empresa ou exportar o histórico antes de integrar Supabase."
+          />
+          <button
+            type="button"
+            onClick={onBack}
+            className="rounded-lg border border-white/14 px-4 py-3 text-sm font-black text-white transition hover:border-cyan-300/60"
+          >
+            Voltar
+          </button>
+        </div>
+
+        {history.length === 0 ? (
+          <div className="mt-10 rounded-xl border border-white/10 bg-white/[0.045] p-8 text-slate-300">
+            Nenhum mapa salvo ainda. Conclua um diagnóstico ou carregue a demonstração de clínica.
+          </div>
+        ) : (
+          <div className="mt-10 grid gap-4">
+            {history.map((item) => (
+              <article
+                key={item.id}
+                className="rounded-xl border border-white/10 bg-white/[0.045] p-5"
+              >
+                <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+                  <div>
+                    <p className="text-sm font-black uppercase tracking-[0.14em] text-cyan-200">
+                      {new Date(item.createdAt).toLocaleString("pt-BR")}
+                    </p>
+                    <h2 className="mt-3 text-2xl font-black text-white">
+                      {item.companyName}
+                    </h2>
+                    <p className="mt-2 text-sm font-bold text-slate-400">
+                      {item.segment} · maturidade {item.maturityScore}/100 ·{" "}
+                      {item.totalEstimatedHoursSavedMonthly}h/mês indicativas
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-2 sm:flex-row">
+                    <button
+                      type="button"
+                      onClick={() => onOpen(item)}
+                      className="rounded-lg bg-emerald-300 px-4 py-3 text-sm font-black text-slate-950 transition hover:bg-cyan-200"
+                    >
+                      Abrir mapa
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => downloadJson(`historico-${item.companyName}.json`, item)}
+                      className="rounded-lg border border-white/14 px-4 py-3 text-sm font-black text-white transition hover:border-cyan-300/60"
+                    >
+                      Exportar
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onRemove(item.id)}
+                      className="rounded-lg border border-rose-300/30 px-4 py-3 text-sm font-black text-rose-100 transition hover:bg-rose-300 hover:text-slate-950"
+                    >
+                      Remover
+                    </button>
+                  </div>
+                </div>
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {item.topOpportunityTitles.map((title) => (
+                    <span
+                      key={title}
+                      className="rounded-lg border border-white/10 bg-slate-950/45 px-3 py-2 text-xs font-bold text-slate-200"
+                    >
+                      {title}
+                    </span>
+                  ))}
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </div>
+    </main>
+  );
+}
+
+function AdminView({
+  catalogDraft,
+  customCatalog,
+  integrationSettings,
+  onAddCatalogItem,
+  onBack,
+  onCatalogDraftChange,
+  onRemoveCatalogItem,
+  onSaveIntegrations,
+  onSaveWorkspace,
+  workspaceProfile,
+}: {
+  catalogDraft: CatalogDraft;
+  customCatalog: OpportunityTemplate[];
+  integrationSettings: IntegrationSettings;
+  onAddCatalogItem: () => void;
+  onBack: () => void;
+  onCatalogDraftChange: (draft: CatalogDraft) => void;
+  onRemoveCatalogItem: (id: string) => void;
+  onSaveIntegrations: (settings: IntegrationSettings) => void;
+  onSaveWorkspace: (profile: WorkspaceProfile) => void;
+  workspaceProfile: WorkspaceProfile;
+}) {
+  const [workspaceDraft, setWorkspaceDraft] = useState(workspaceProfile);
+  const [integrationDraft, setIntegrationDraft] = useState(integrationSettings);
+
+  useEffect(() => setWorkspaceDraft(workspaceProfile), [workspaceProfile]);
+  useEffect(() => setIntegrationDraft(integrationSettings), [integrationSettings]);
+
+  return (
+    <main className="min-h-[calc(100vh-74px)] bg-[#050712] py-10">
+      <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <SectionHeading
+            eyebrow="Admin local"
+            title="Configurações para evoluir para SaaS"
+            description="Esta área prepara autenticação, histórico, integrações e catálogo sem exigir Supabase, CRM ou webhook nesta versão."
+          />
+          <button
+            type="button"
+            onClick={onBack}
+            className="rounded-lg border border-white/14 px-4 py-3 text-sm font-black text-white transition hover:border-cyan-300/60"
+          >
+            Voltar
+          </button>
+        </div>
+
+        <div className="mt-10 grid gap-6 lg:grid-cols-2">
+          <section className="rounded-xl border border-white/10 bg-white/[0.045] p-5">
+            <h2 className="text-2xl font-black text-white">Workspace e auth</h2>
+            <p className="mt-3 text-sm leading-6 text-slate-300">
+              Dados salvos localmente. Quando houver Supabase, esta estrutura vira perfil
+              de workspace e usuário.
+            </p>
+            <div className="mt-5 grid gap-4">
+              <AdminInput
+                label="Nome do workspace"
+                value={workspaceDraft.workspaceName}
+                onChange={(value) =>
+                  setWorkspaceDraft({ ...workspaceDraft, workspaceName: value })
+                }
+              />
+              <AdminInput
+                label="Responsável"
+                value={workspaceDraft.ownerName}
+                onChange={(value) => setWorkspaceDraft({ ...workspaceDraft, ownerName: value })}
+              />
+              <AdminInput
+                label="E-mail do responsável"
+                value={workspaceDraft.ownerEmail}
+                onChange={(value) =>
+                  setWorkspaceDraft({ ...workspaceDraft, ownerEmail: value })
+                }
+              />
+              <label className="grid gap-2 text-sm font-bold text-slate-200">
+                Modo
+                <select
+                  value={workspaceDraft.authMode}
+                  onChange={(event) =>
+                    setWorkspaceDraft({
+                      ...workspaceDraft,
+                      authMode: event.target.value as WorkspaceProfile["authMode"],
+                    })
+                  }
+                  className="rounded-lg border border-white/12 bg-slate-950/70 px-3 py-3 text-white outline-none focus:border-cyan-300"
+                >
+                  <option value="local">Local</option>
+                  <option value="supabase-ready">Preparado para Supabase</option>
+                </select>
+              </label>
+              <button
+                type="button"
+                onClick={() => onSaveWorkspace(workspaceDraft)}
+                className="rounded-lg bg-emerald-300 px-4 py-3 text-sm font-black text-slate-950 transition hover:bg-cyan-200"
+              >
+                Salvar workspace
+              </button>
+            </div>
+          </section>
+
+          <section className="rounded-xl border border-white/10 bg-white/[0.045] p-5">
+            <h2 className="text-2xl font-black text-white">Integrações</h2>
+            <p className="mt-3 text-sm leading-6 text-slate-300">
+              O MVP não envia dados externos sem configuração. Estes campos preparam
+              CRM, WhatsApp e webhook para a próxima etapa.
+            </p>
+            <div className="mt-5 grid gap-4">
+              <AdminInput
+                label="CRM principal"
+                value={integrationDraft.crmName}
+                onChange={(value) =>
+                  setIntegrationDraft({ ...integrationDraft, crmName: value })
+                }
+              />
+              <AdminInput
+                label="Webhook de implementação"
+                value={integrationDraft.webhookUrl}
+                onChange={(value) =>
+                  setIntegrationDraft({ ...integrationDraft, webhookUrl: value })
+                }
+              />
+              <AdminInput
+                label="WhatsApp comercial"
+                value={integrationDraft.whatsappNumber}
+                onChange={(value) =>
+                  setIntegrationDraft({ ...integrationDraft, whatsappNumber: value })
+                }
+              />
+              <label className="grid gap-2 text-sm font-bold text-slate-200">
+                Observações
+                <textarea
+                  value={integrationDraft.notes}
+                  onChange={(event) =>
+                    setIntegrationDraft({ ...integrationDraft, notes: event.target.value })
+                  }
+                  className="min-h-24 rounded-lg border border-white/12 bg-slate-950/70 px-3 py-3 text-white outline-none focus:border-cyan-300"
+                />
+              </label>
+              <button
+                type="button"
+                onClick={() => onSaveIntegrations(integrationDraft)}
+                className="rounded-lg bg-emerald-300 px-4 py-3 text-sm font-black text-slate-950 transition hover:bg-cyan-200"
+              >
+                Salvar integrações
+              </button>
+            </div>
+          </section>
+        </div>
+
+        <section className="mt-6 rounded-xl border border-white/10 bg-white/[0.045] p-5">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <h2 className="text-2xl font-black text-white">Editor de catálogo</h2>
+              <p className="mt-3 text-sm leading-6 text-slate-300">
+                Catálogo base: {opportunityCatalog.length} oportunidades. Customizadas:{" "}
+                {customCatalog.length}. Novos itens entram no motor dos próximos mapas.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() =>
+                downloadJson("catalogo-inema-ai-map.json", {
+                  base: opportunityCatalog,
+                  custom: customCatalog,
+                })
+              }
+              className="rounded-lg border border-white/14 px-4 py-3 text-sm font-black text-white transition hover:border-cyan-300/60"
+            >
+              Exportar catálogo
+            </button>
+          </div>
+
+          <div className="mt-6 grid gap-4 lg:grid-cols-5">
+            <AdminInput
+              label="Título"
+              value={catalogDraft.title}
+              onChange={(value) => onCatalogDraftChange({ ...catalogDraft, title: value })}
+            />
+            <label className="grid gap-2 text-sm font-bold text-slate-200">
+              Área
+              <select
+                value={catalogDraft.area}
+                onChange={(event) =>
+                  onCatalogDraftChange({
+                    ...catalogDraft,
+                    area: event.target.value as BusinessArea,
+                  })
+                }
+                className="rounded-lg border border-white/12 bg-slate-950/70 px-3 py-3 text-white outline-none focus:border-cyan-300"
+              >
+                {businessAreas.map((area) => (
+                  <option key={area}>{area}</option>
+                ))}
+              </select>
+            </label>
+            <AdminInput
+              label="Problema"
+              value={catalogDraft.problem}
+              onChange={(value) => onCatalogDraftChange({ ...catalogDraft, problem: value })}
+            />
+            <AdminInput
+              label="Solução"
+              value={catalogDraft.solution}
+              onChange={(value) => onCatalogDraftChange({ ...catalogDraft, solution: value })}
+            />
+            <AdminInput
+              label="Palavras-chave"
+              value={catalogDraft.keywords}
+              onChange={(value) => onCatalogDraftChange({ ...catalogDraft, keywords: value })}
+            />
+          </div>
+
+          <button
+            type="button"
+            onClick={onAddCatalogItem}
+            className="mt-5 rounded-lg bg-emerald-300 px-4 py-3 text-sm font-black text-slate-950 transition hover:bg-cyan-200"
+          >
+            Adicionar ao motor local
+          </button>
+
+          {customCatalog.length > 0 ? (
+            <div className="mt-6 grid gap-3">
+              {customCatalog.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex flex-col gap-3 rounded-lg border border-white/10 bg-slate-950/45 p-4 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <div>
+                    <p className="font-black text-white">{item.title}</p>
+                    <p className="mt-1 text-sm text-slate-400">
+                      {item.area} · {item.triggerKeywords.join(", ")}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => onRemoveCatalogItem(item.id)}
+                    className="rounded-lg border border-rose-300/30 px-3 py-2 text-sm font-black text-rose-100 transition hover:bg-rose-300 hover:text-slate-950"
+                  >
+                    Remover
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : null}
+        </section>
+      </div>
+    </main>
+  );
+}
+
+function AdminInput({
+  label,
+  onChange,
+  value,
+}: {
+  label: string;
+  onChange: (value: string) => void;
+  value: string;
+}) {
+  return (
+    <label className="grid gap-2 text-sm font-bold text-slate-200">
+      {label}
+      <input
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className="rounded-lg border border-white/12 bg-slate-950/70 px-3 py-3 text-white outline-none focus:border-cyan-300"
+      />
+    </label>
+  );
+}
+
 function DashboardView({
   answers,
   filters,
   leadForm,
   onCopy,
+  onExportJson,
   onFilterChange,
   onInterest,
   onLeadChange,
@@ -1440,6 +2061,7 @@ function DashboardView({
   filters: FilterState;
   leadForm: LeadProfile;
   onCopy: () => void;
+  onExportJson: () => void;
   onFilterChange: (filters: FilterState) => void;
   onInterest: (context: InterestContext) => void;
   onLeadChange: (lead: LeadProfile) => void;
@@ -1486,6 +2108,7 @@ function DashboardView({
             </div>
             <div className="no-print flex flex-wrap gap-2">
               <ActionButton onClick={onCopy}>Copiar resumo</ActionButton>
+              <ActionButton onClick={onExportJson}>Exportar JSON</ActionButton>
               <ActionButton onClick={onPrint}>Imprimir ou PDF</ActionButton>
               <ActionButton onClick={onShare}>Compartilhar</ActionButton>
               <ActionButton onClick={onRestart}>Reiniciar</ActionButton>
@@ -1523,6 +2146,7 @@ function DashboardView({
                 onSubmit={onLeadSubmit}
               />
             ) : null}
+            {report.aiBrief ? <AiBriefPanel aiBrief={report.aiBrief} /> : null}
             <Assumptions assumptions={report.assumptions} />
           </aside>
         </div>
@@ -1795,6 +2419,42 @@ function Assumptions({ assumptions }: { assumptions: string[] }) {
           </li>
         ))}
       </ul>
+    </section>
+  );
+}
+
+function AiBriefPanel({ aiBrief }: { aiBrief: NonNullable<OpportunityMap["aiBrief"]> }) {
+  return (
+    <section className="rounded-xl border border-violet-300/20 bg-violet-300/[0.07] p-5 print:border-slate-200 print:bg-white">
+      <p className="text-xs font-black uppercase tracking-[0.14em] text-violet-200 print:text-slate-700">
+        Briefing IA
+      </p>
+      <h2 className="mt-2 text-xl font-black text-white print:text-slate-950">
+        Próxima melhor ação
+      </h2>
+      <p className="mt-3 text-sm font-bold leading-6 text-slate-200 print:text-slate-700">
+        {aiBrief.firstAction || "Validar o primeiro piloto com dados reais."}
+      </p>
+      {aiBrief.suggestedNextActions.length > 0 ? (
+        <ul className="mt-4 grid gap-2 text-sm leading-6 text-slate-300 print:text-slate-700">
+          {aiBrief.suggestedNextActions.map((action) => (
+            <li key={action} className="flex gap-2">
+              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-300" />
+              {action}
+            </li>
+          ))}
+        </ul>
+      ) : null}
+      {aiBrief.riskNotes.length > 0 ? (
+        <div className="mt-4 rounded-lg border border-white/10 bg-slate-950/35 p-3 print:border-slate-200 print:bg-slate-50">
+          <p className="text-xs font-black uppercase tracking-[0.12em] text-slate-400">
+            Cuidados
+          </p>
+          <p className="mt-2 text-sm leading-6 text-slate-300 print:text-slate-700">
+            {aiBrief.riskNotes.join(" ")}
+          </p>
+        </div>
+      ) : null}
     </section>
   );
 }
@@ -2104,21 +2764,56 @@ function DetailList({ items, title }: { items: string[]; title: string }) {
 
 function InterestModal({
   context,
+  integrationSettings,
   onClose,
 }: {
   context: NonNullable<InterestContext>;
+  integrationSettings: IntegrationSettings;
   onClose: () => void;
 }) {
   const [submitted, setSubmitted] = useState(false);
+  const [deliveryStatus, setDeliveryStatus] = useState("Registro local.");
 
-  function submit(event: FormEvent<HTMLFormElement>) {
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const payload = {
+      context,
+      name: String(formData.get("name") ?? ""),
+      email: String(formData.get("email") ?? ""),
+      message: String(formData.get("message") ?? ""),
+      crmName: integrationSettings.crmName,
+      createdAt: new Date().toISOString(),
+    };
+
+    if (integrationSettings.webhookUrl) {
+      try {
+        await fetch(integrationSettings.webhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        setDeliveryStatus("Registro local e webhook acionado.");
+      } catch {
+        setDeliveryStatus("Registro local salvo. O webhook configurado não respondeu.");
+      }
+    } else {
+      setDeliveryStatus("Registro local. Nenhum webhook configurado.");
+    }
+
     setSubmitted(true);
     trackEvent("implementation_interest", {
       type: context.type,
       label: context.label,
+      hasWebhook: Boolean(integrationSettings.webhookUrl),
     });
   }
+
+  const whatsappHref = integrationSettings.whatsappNumber
+    ? `https://wa.me/${integrationSettings.whatsappNumber.replace(/\D/g, "")}?text=${encodeURIComponent(
+        `Tenho interesse em ${context.label}.`,
+      )}`
+    : "";
 
   return (
     <div
@@ -2148,16 +2843,28 @@ function InterestModal({
 
         {submitted ? (
           <div className="mt-6 rounded-lg border border-emerald-300/25 bg-emerald-300/10 p-5">
-            <p className="font-black text-emerald-100">Interesse registrado localmente.</p>
+            <p className="font-black text-emerald-100">{deliveryStatus}</p>
             <p className="mt-2 text-sm leading-6 text-slate-300">
-              Nesta versão, nenhum dado é enviado para serviços externos sem configuração.
+              Nesta versão, dados só são enviados externamente quando um webhook foi
+              configurado no Admin.
             </p>
+            {whatsappHref ? (
+              <a
+                href={whatsappHref}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-4 inline-flex rounded-lg bg-emerald-300 px-4 py-3 text-sm font-black text-slate-950 transition hover:bg-cyan-200"
+              >
+                Abrir WhatsApp configurado
+              </a>
+            ) : null}
           </div>
         ) : (
           <form onSubmit={submit} className="mt-6 grid gap-4">
             <label className="grid gap-2 text-sm font-bold text-slate-200">
               Nome
               <input
+                name="name"
                 required
                 className="rounded-lg border border-white/12 bg-slate-950/70 px-3 py-3 text-white outline-none focus:border-cyan-300"
                 placeholder="Seu nome"
@@ -2166,6 +2873,7 @@ function InterestModal({
             <label className="grid gap-2 text-sm font-bold text-slate-200">
               E-mail
               <input
+                name="email"
                 required
                 className="rounded-lg border border-white/12 bg-slate-950/70 px-3 py-3 text-white outline-none focus:border-cyan-300"
                 placeholder="voce@empresa.com"
@@ -2175,6 +2883,7 @@ function InterestModal({
             <label className="grid gap-2 text-sm font-bold text-slate-200">
               Contexto
               <textarea
+                name="message"
                 className="min-h-24 rounded-lg border border-white/12 bg-slate-950/70 px-3 py-3 text-white outline-none focus:border-cyan-300"
                 defaultValue={`Tenho interesse em ${context.label}.`}
               />

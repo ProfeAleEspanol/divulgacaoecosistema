@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { clinicDemoDiagnosis } from "../src/data/demo-diagnosis";
 import { opportunityCatalog } from "../src/data/opportunities";
 import { generateOpportunityMap } from "../src/lib/recommendation-engine";
-import type { DiagnosisAnswers } from "../src/types/inema-map";
+import type { DiagnosisAnswers, OpportunityTemplate } from "../src/types/inema-map";
 
 test("catalog has at least 12 opportunities across the required areas", () => {
   const areas = new Set(opportunityCatalog.map((opportunity) => opportunity.area));
@@ -81,4 +81,53 @@ test("content bottleneck elevates content agent", () => {
 
   assert.equal(report.opportunities[0].id, "content-agent");
   assert.ok(report.maturityScore >= 60);
+});
+
+test("custom catalog items can influence the recommendation engine", () => {
+  const customOpportunity: OpportunityTemplate = {
+    id: "custom-delivery-agent",
+    title: "Agente customizado para cardápio e delivery",
+    area: "Operações",
+    problem: "Pedidos chegam desorganizados e o cardápio muda com frequência.",
+    solution: "Criar triagem de pedidos, respostas sobre cardápio e atualização operacional.",
+    agent: "Agente de Delivery",
+    tools: ["WhatsApp Business", "ChatGPT", "Planilhas"],
+    prompt: "Organize o pedido, valide itens e sugira próxima ação.",
+    baseImpact: 5,
+    effort: 2,
+    urgency: 5,
+    baseHoursSavedMonthly: 20,
+    triggerKeywords: ["delivery", "cardápio", "pedidos"],
+    relevantAreas: ["Operações", "Atendimento"],
+    relevantSegments: ["Restaurante"],
+    relevantGoals: ["ganhar-tempo", "melhorar-atendimento"],
+    relevantPriorities: ["ganhar tempo", "melhorar atendimento"],
+    implementationSteps: ["Mapear cardápio", "Criar fluxo", "Testar"],
+    risks: ["Cardápio desatualizado"],
+    metrics: ["tempo de resposta"],
+    nextAction: "Mapear pedidos da última semana.",
+  };
+
+  const diagnosis: DiagnosisAnswers = {
+    companyName: "Sabor Norte",
+    segment: "Restaurante",
+    teamSize: 9,
+    timeConsumingAreas: ["Operações", "Atendimento"],
+    currentProblems: ["Pedidos de delivery são manuais", "Dúvidas sobre cardápio", "Atendimento demora"],
+    customProblems: "",
+    goal90Days: "ganhar-tempo",
+    toolsUsed: ["WhatsApp Business"],
+    customTools: "",
+    aiMaturity: "inicial",
+    repetitiveHoursPerWeek: 20,
+    priority: "ganhar tempo",
+  };
+
+  const report = generateOpportunityMap(diagnosis, [...opportunityCatalog, customOpportunity]);
+
+  assert.ok(
+    report.opportunities
+      .slice(0, 3)
+      .some((opportunity) => opportunity.id === "custom-delivery-agent"),
+  );
 });

@@ -13,6 +13,7 @@ function localResponse(summary?: string) {
   return NextResponse.json({
     source: "rules",
     executiveSummary: summary ?? null,
+    aiBrief: null,
     note: "Resumo local usado porque a IA generativa não está configurada.",
   });
 }
@@ -28,6 +29,26 @@ function extractOutputText(data: unknown) {
   }
 
   return null;
+}
+
+function extractJsonObject(text: string) {
+  const start = text.indexOf("{");
+  const end = text.lastIndexOf("}");
+
+  if (start === -1 || end === -1 || end <= start) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(text.slice(start, end + 1)) as {
+      executiveSummary?: string;
+      firstAction?: string;
+      suggestedNextActions?: string[];
+      riskNotes?: string[];
+    };
+  } catch {
+    return null;
+  }
 }
 
 export async function POST(request: Request) {
@@ -49,19 +70,25 @@ export async function POST(request: Request) {
       body: JSON.stringify({
         model,
         instructions:
-          "Você é um consultor sênior de IA para pequenas e médias empresas. Escreva em português do Brasil, com clareza, sem promessas financeiras irreais e com recomendações práticas.",
+          "Você é um consultor sênior de IA para pequenas e médias empresas. Escreva em português do Brasil, com clareza, sem promessas financeiras irreais e com recomendações práticas. Retorne somente JSON válido.",
         input: [
           {
             role: "user",
             content: JSON.stringify({
               tarefa:
-                "Reescreva o resumo executivo do mapa de oportunidades em até 110 palavras e destaque a primeira ação recomendada. Mantenha as estimativas como indicativas.",
+                "Reescreva o resumo executivo em até 110 palavras e devolva também firstAction, suggestedNextActions com 3 itens e riskNotes com 2 itens. Mantenha estimativas como indicativas.",
+              formato: {
+                executiveSummary: "string",
+                firstAction: "string",
+                suggestedNextActions: ["string", "string", "string"],
+                riskNotes: ["string", "string"],
+              },
               diagnosis: body.diagnosis,
               report: body.report,
             }),
           },
         ],
-        max_output_tokens: 360,
+        max_output_tokens: 520,
       }),
     });
 
@@ -70,11 +97,21 @@ export async function POST(request: Request) {
     }
 
     const data = (await response.json()) as unknown;
-    const executiveSummary = extractOutputText(data);
+    const outputText = extractOutputText(data);
+    const parsed = outputText ? extractJsonObject(outputText) : null;
 
     return NextResponse.json({
-      source: executiveSummary ? "openai" : "rules",
-      executiveSummary: executiveSummary ?? body.report?.executiveSummary ?? null,
+      source: parsed ? "openai" : "rules",
+      executiveSummary:
+        parsed?.executiveSummary ?? outputText ?? body.report?.executiveSummary ?? null,
+      aiBrief: parsed
+        ? {
+            source: "openai",
+            firstAction: parsed.firstAction ?? "",
+            suggestedNextActions: parsed.suggestedNextActions ?? [],
+            riskNotes: parsed.riskNotes ?? [],
+          }
+        : null,
     });
   } catch {
     return localResponse(body.report?.executiveSummary);
