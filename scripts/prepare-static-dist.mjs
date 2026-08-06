@@ -41,9 +41,6 @@ export default {
       if (response.status !== 404) {
         return response;
       }
-
-      const url = new URL(request.url);
-      return env.ASSETS.fetch(new Request(new URL("/", url.origin), request));
     }
 
     return new Response(fallbackHtml, {
