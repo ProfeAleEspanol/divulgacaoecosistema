@@ -862,7 +862,7 @@ function Header({
   onStart: () => void;
 }) {
   return (
-    <header className="sticky top-0 z-40 border-b border-white/10 bg-[#030711]/78 backdrop-blur-2xl print:hidden">
+    <header className="inema-header sticky top-0 z-40 print:hidden">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-5 py-3 sm:px-6 lg:px-8">
         <a
           href="#topo"
@@ -882,7 +882,7 @@ function Header({
           </span>
         </a>
 
-        <nav className="hidden items-center gap-6 text-sm font-semibold text-slate-300 md:flex">
+        <nav className="inema-header-nav hidden items-center gap-6 text-sm font-semibold text-slate-300 md:flex">
           <a href="#como-funciona" className="quiet-link transition">
             Como funciona
           </a>
@@ -934,7 +934,7 @@ function HomeView({
   onStart: () => void;
 }) {
   return (
-    <main id="topo">
+    <main id="topo" className="inema-home">
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_15%,rgba(34,211,238,0.18),transparent_30%),radial-gradient(circle_at_80%_10%,rgba(124,77,255,0.22),transparent_31%),linear-gradient(135deg,rgba(3,7,18,0.28)_0%,rgba(7,19,40,0.75)_48%,rgba(4,17,18,0.72)_100%)]" />
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-200/50 to-transparent" />
