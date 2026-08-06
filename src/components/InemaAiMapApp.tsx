@@ -2125,8 +2125,8 @@ function DashboardView({
   );
 
   return (
-    <main className="bg-transparent">
-      <section className="border-b border-white/10 bg-[radial-gradient(circle_at_15%_0%,rgba(34,211,238,0.18),transparent_32%),radial-gradient(circle_at_86%_10%,rgba(86,246,176,0.12),transparent_28%),linear-gradient(180deg,rgba(3,7,18,0.45),rgba(3,7,18,0.86))] py-10 print:bg-white">
+    <main className="dashboard-shell bg-transparent">
+      <section className="dashboard-hero border-b border-white/10 bg-[radial-gradient(circle_at_15%_0%,rgba(34,211,238,0.18),transparent_32%),radial-gradient(circle_at_86%_10%,rgba(86,246,176,0.12),transparent_28%),linear-gradient(180deg,rgba(3,7,18,0.45),rgba(3,7,18,0.86))] py-10 print:bg-white">
         <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
             <div>
@@ -2186,7 +2186,7 @@ function DashboardView({
         </div>
       </section>
 
-      <section className="border-y border-white/10 bg-[#07101f]/82 py-10">
+      <section className="dashboard-opportunities border-y border-white/10 bg-[#07101f]/82 py-10">
         <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <SectionHeading
@@ -2218,7 +2218,7 @@ function DashboardView({
         </div>
       </section>
 
-      <section className="bg-transparent py-12">
+      <section className="dashboard-roadmap bg-transparent py-12">
         <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
           <SectionHeading
             eyebrow="Plano de ação"
