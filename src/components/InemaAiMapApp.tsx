@@ -736,7 +736,7 @@ export function InemaAiMapApp() {
   }
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#050712] text-white">
+    <div className="aurora-shell min-h-screen overflow-x-hidden text-white">
       <Header
         onStart={startDiagnosis}
         onDemo={loadDemo}
@@ -833,7 +833,7 @@ export function InemaAiMapApp() {
 
       {toast ? (
         <div
-          className="fixed bottom-5 left-1/2 z-50 w-[min(92vw,420px)] -translate-x-1/2 rounded-lg border border-emerald-300/30 bg-emerald-300 px-4 py-3 text-center text-sm font-bold text-slate-950 shadow-[0_20px_70px_rgba(16,185,129,0.28)]"
+          className="fixed bottom-5 left-1/2 z-50 w-[min(92vw,420px)] -translate-x-1/2 rounded-lg border border-emerald-200/50 bg-emerald-300 px-4 py-3 text-center text-sm font-bold text-slate-950 shadow-[0_20px_70px_rgba(16,185,129,0.32)]"
           role="status"
           onAnimationEnd={() => setToast("")}
         >
@@ -862,29 +862,34 @@ function Header({
   onStart: () => void;
 }) {
   return (
-    <header className="sticky top-0 z-40 border-b border-white/10 bg-[#050712]/88 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-40 border-b border-white/10 bg-[#030711]/78 backdrop-blur-2xl print:hidden">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-5 py-3 sm:px-6 lg:px-8">
         <a
           href="#topo"
-          className="group inline-flex items-center gap-3 focus-visible:rounded-md"
+          className="group inline-flex min-w-0 items-center gap-3 rounded-lg focus-visible:outline-none"
           aria-label="INEMA.AI MAP"
         >
-          <span className="grid h-9 w-9 place-items-center rounded-lg border border-cyan-300/30 bg-cyan-300/10 text-sm font-black text-cyan-200 shadow-[0_0_30px_rgba(34,211,238,0.2)]">
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-cyan-200/35 bg-cyan-300/10 text-sm font-black text-cyan-100 shadow-[0_0_34px_rgba(34,211,238,0.22)]">
             IA
           </span>
-          <span className="text-sm font-black tracking-[0.22em] text-white sm:text-base">
-            INEMA.AI MAP
+          <span className="min-w-0 leading-tight">
+            <span className="block truncate text-sm font-black tracking-[0.2em] text-white sm:text-base">
+              INEMA.AI MAP
+            </span>
+            <span className="brand-pill mt-1 hidden rounded-full px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.16em] sm:inline-flex">
+              Opportunity intelligence
+            </span>
           </span>
         </a>
 
         <nav className="hidden items-center gap-6 text-sm font-semibold text-slate-300 md:flex">
-          <a href="#como-funciona" className="hover:text-white">
+          <a href="#como-funciona" className="quiet-link transition">
             Como funciona
           </a>
-          <button type="button" onClick={onHistory} className="hover:text-white">
+          <button type="button" onClick={onHistory} className="quiet-link transition">
             Histórico{historyCount > 0 ? ` (${historyCount})` : ""}
           </button>
-          <button type="button" onClick={onAdmin} className="hover:text-white">
+          <button type="button" onClick={onAdmin} className="quiet-link transition">
             Admin
           </button>
         </nav>
@@ -894,7 +899,7 @@ function Header({
             <button
               type="button"
               onClick={onRestore}
-              className="hidden rounded-lg border border-white/12 px-3 py-2 text-sm font-bold text-white transition hover:border-emerald-300/60 hover:text-emerald-200 sm:inline-flex"
+              className="secondary-action hidden rounded-lg px-3 py-2 text-sm font-bold transition sm:inline-flex"
             >
               Retomar mapa
             </button>
@@ -902,14 +907,14 @@ function Header({
           <button
             type="button"
             onClick={onDemo}
-            className="hidden rounded-lg border border-white/12 px-3 py-2 text-sm font-bold text-white transition hover:border-violet-300/60 hover:text-violet-200 sm:inline-flex"
+            className="secondary-action hidden rounded-lg px-3 py-2 text-sm font-bold transition sm:inline-flex"
           >
             Ver demonstração
           </button>
           <button
             type="button"
             onClick={onStart}
-            className="rounded-lg bg-emerald-300 px-4 py-2 text-sm font-black text-slate-950 shadow-[0_12px_36px_rgba(110,231,183,0.24)] transition hover:bg-cyan-200"
+            className="primary-action rounded-lg px-4 py-2 text-sm font-black transition"
           >
             Criar meu mapa
           </button>
@@ -931,11 +936,11 @@ function HomeView({
   return (
     <main id="topo">
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(34,211,238,0.18),transparent_28%),radial-gradient(circle_at_82%_8%,rgba(139,92,246,0.2),transparent_30%),linear-gradient(135deg,#050712_0%,#071328_48%,#08130f_100%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.045)_1px,transparent_1px)] bg-[size:44px_44px] opacity-30" />
-        <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-5 pb-16 pt-14 sm:px-6 sm:pb-20 sm:pt-20 lg:grid-cols-[0.96fr_1.04fr] lg:px-8 lg:pb-24">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_15%,rgba(34,211,238,0.18),transparent_30%),radial-gradient(circle_at_80%_10%,rgba(124,77,255,0.22),transparent_31%),linear-gradient(135deg,rgba(3,7,18,0.28)_0%,rgba(7,19,40,0.75)_48%,rgba(4,17,18,0.72)_100%)]" />
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-200/50 to-transparent" />
+        <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-5 pb-16 pt-12 sm:px-6 sm:pb-20 sm:pt-20 lg:grid-cols-[0.9fr_1.1fr] lg:px-8 lg:pb-24 lg:pt-20">
           <div>
-            <p className="mb-5 inline-flex rounded-full border border-cyan-300/20 bg-cyan-300/10 px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-cyan-200">
+            <p className="brand-pill mb-5 inline-flex rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.2em]">
               Mapeie as oportunidades da sua empresa
             </p>
             <h1 className="max-w-4xl text-balance text-4xl font-black tracking-normal text-white sm:text-5xl lg:text-6xl">
@@ -949,17 +954,31 @@ function HomeView({
               <button
                 type="button"
                 onClick={onStart}
-                className="rounded-lg bg-emerald-300 px-6 py-4 text-base font-black text-slate-950 shadow-[0_20px_60px_rgba(110,231,183,0.25)] transition hover:bg-cyan-200"
+                className="primary-action rounded-lg px-6 py-4 text-base font-black transition"
               >
                 Criar meu mapa gratuitamente
               </button>
               <button
                 type="button"
                 onClick={onDemo}
-                className="rounded-lg border border-white/16 bg-white/[0.04] px-6 py-4 text-base font-black text-white transition hover:border-violet-300/70 hover:bg-violet-300/10"
+                className="secondary-action rounded-lg px-6 py-4 text-base font-black transition"
               >
                 Ver uma demonstração
               </button>
+            </div>
+            <div className="mt-8 grid max-w-2xl gap-3 sm:grid-cols-3">
+              {[
+                ["13+", "oportunidades no catálogo"],
+                ["10", "perguntas guiadas"],
+                ["7/30/90", "plano por ondas"],
+              ].map(([value, label]) => (
+                <div key={value} className="glass-card rounded-lg p-4">
+                  <p className="text-2xl font-black text-white">{value}</p>
+                  <p className="mt-1 text-xs font-bold uppercase tracking-[0.12em] text-slate-400">
+                    {label}
+                  </p>
+                </div>
+              ))}
             </div>
             <p className="mt-5 max-w-xl text-sm leading-6 text-slate-400">
               As estimativas são indicativas e dependem das respostas fornecidas,
@@ -986,9 +1005,9 @@ function HomeView({
             ].map(([step, title, text]) => (
               <article
                 key={step}
-                className="rounded-lg border border-white/10 bg-white/[0.045] p-6 shadow-[0_20px_70px_rgba(0,0,0,0.18)]"
+                className="glass-card focus-ring rounded-lg p-6"
               >
-                <span className="grid h-10 w-10 place-items-center rounded-lg bg-cyan-300 text-sm font-black text-slate-950">
+                <span className="grid h-10 w-10 place-items-center rounded-lg bg-gradient-to-br from-cyan-200 to-emerald-300 text-sm font-black text-slate-950 shadow-[0_12px_34px_rgba(34,211,238,0.18)]">
                   {step}
                 </span>
                 <h3 className="mt-5 text-xl font-black text-white">{title}</h3>
@@ -999,7 +1018,7 @@ function HomeView({
         </div>
       </section>
 
-      <section className="bg-[#050712] py-16 sm:py-20">
+      <section className="bg-[#030711]/60 py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
           <SectionHeading
             eyebrow="Exemplos por segmento"
@@ -1010,7 +1029,7 @@ function HomeView({
             {segmentExamples.map((item) => (
               <article
                 key={item.segment}
-                className="rounded-lg border border-white/10 bg-gradient-to-br from-white/[0.08] to-white/[0.025] p-6"
+                className="glass-card focus-ring rounded-lg p-6"
               >
                 <h3 className="text-lg font-black text-white">{item.segment}</h3>
                 <p className="mt-4 text-sm leading-7 text-slate-300">{item.result}</p>
@@ -1038,7 +1057,7 @@ function HomeView({
             ].map((benefit) => (
               <div
                 key={benefit}
-                className="rounded-lg border border-emerald-300/15 bg-emerald-300/[0.055] p-5 text-sm font-bold leading-6 text-emerald-100"
+                className="rounded-lg border border-emerald-200/20 bg-emerald-300/[0.075] p-5 text-sm font-bold leading-6 text-emerald-50 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
               >
                 {benefit}
               </div>
@@ -1047,7 +1066,7 @@ function HomeView({
         </div>
       </section>
 
-      <section className="bg-[#050712] py-16 sm:py-20">
+      <section className="bg-[#030711]/70 py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
           <SectionHeading
             eyebrow="Demonstração comercial"
@@ -1062,7 +1081,7 @@ function HomeView({
             ].map(([name, quote]) => (
               <blockquote
                 key={quote}
-                className="rounded-lg border border-white/10 bg-white/[0.045] p-6"
+                className="glass-card rounded-lg p-6"
               >
                 <p className="text-sm font-black uppercase tracking-[0.16em] text-violet-200">
                   {name}
@@ -1088,7 +1107,7 @@ function HomeView({
             {faqItems.map((item) => (
               <details
                 key={item.question}
-                className="group rounded-lg border border-white/10 bg-white/[0.045] p-5"
+                className="group glass-card rounded-lg p-5"
               >
                 <summary className="cursor-pointer list-none text-lg font-black text-white">
                   <span className="flex items-start justify-between gap-4">
@@ -1115,7 +1134,7 @@ function HomeView({
           <button
             type="button"
             onClick={onStart}
-            className="mt-8 rounded-lg bg-emerald-300 px-6 py-4 text-base font-black text-slate-950 transition hover:bg-cyan-200"
+            className="primary-action mt-8 rounded-lg px-6 py-4 text-base font-black transition"
           >
             Criar meu mapa
           </button>
@@ -1142,7 +1161,7 @@ function PricingSection({
           {pricingPlans.map((plan) => (
             <article
               key={plan.name}
-              className="flex min-h-[320px] flex-col rounded-lg border border-white/10 bg-white/[0.045] p-6"
+              className="glass-card focus-ring flex min-h-[320px] flex-col rounded-lg p-6"
             >
               <h3 className="text-xl font-black text-white">{plan.name}</h3>
               <p className="mt-3 text-2xl font-black text-emerald-200">{plan.price}</p>
@@ -1158,7 +1177,7 @@ function PricingSection({
               <button
                 type="button"
                 onClick={() => onInterest({ type: "plan", label: plan.name })}
-                className="mt-auto rounded-lg border border-emerald-300/30 px-4 py-3 text-sm font-black text-emerald-100 transition hover:bg-emerald-300 hover:text-slate-950"
+                className="secondary-action mt-auto rounded-lg px-4 py-3 text-sm font-black transition"
               >
                 Tenho interesse
               </button>
@@ -1172,9 +1191,9 @@ function PricingSection({
 
 function PlansHomeSection() {
   return (
-    <section className="bg-[#050712] py-12">
+    <section className="bg-transparent py-12">
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-        <div className="rounded-lg border border-cyan-300/16 bg-cyan-300/[0.055] p-6">
+        <div className="glass-card rounded-lg p-6">
           <p className="text-sm font-black uppercase tracking-[0.18em] text-cyan-200">
             Ecossistema INEMA
           </p>
@@ -1196,9 +1215,10 @@ function MapPreview() {
   ];
 
   return (
-    <div className="relative">
-      <div className="absolute -inset-4 rounded-[32px] bg-gradient-to-br from-cyan-300/18 via-violet-400/16 to-emerald-300/12 blur-2xl" />
-      <div className="relative rounded-xl border border-white/14 bg-white/[0.07] p-4 shadow-[0_30px_90px_rgba(0,0,0,0.32)] backdrop-blur-xl sm:p-5">
+    <div className="relative lg:pl-4">
+      <div className="absolute -inset-4 rounded-[32px] bg-gradient-to-br from-cyan-300/18 via-violet-400/20 to-emerald-300/14 blur-2xl" />
+      <div className="glass-panel relative overflow-hidden rounded-xl p-4 sm:p-5">
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-200/70 to-transparent" />
         <div className="mb-4 flex items-center justify-between gap-4">
           <div>
             <p className="text-xs font-black uppercase tracking-[0.2em] text-cyan-200">
@@ -1209,6 +1229,19 @@ function MapPreview() {
           <div className="rounded-lg bg-emerald-300 px-3 py-2 text-xs font-black text-slate-950">
             12+ casos
           </div>
+        </div>
+
+        <div className="mb-4 grid gap-2 sm:grid-cols-3">
+          {["Impacto", "Esforço", "Próxima onda"].map((label, index) => (
+            <div key={label} className="rounded-lg border border-white/10 bg-slate-950/45 px-3 py-2">
+              <p className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">
+                {label}
+              </p>
+              <p className="mt-1 text-sm font-black text-white">
+                {index === 0 ? "Alto" : index === 1 ? "Baixo-médio" : "7 dias"}
+              </p>
+            </div>
+          ))}
         </div>
 
         <div className="grid gap-3">
@@ -1222,12 +1255,12 @@ function MapPreview() {
           {rows.map((row) => (
             <div
               key={row.join("-")}
-              className="grid gap-2 rounded-lg border border-white/10 bg-slate-950/45 p-3 sm:grid-cols-5"
+              className="map-lane grid gap-2 rounded-lg border border-white/10 bg-slate-950/50 p-3 sm:grid-cols-5"
             >
               {row.map((item, index) => (
                 <div
                   key={item}
-                  className={`rounded-md px-3 py-2 text-sm font-bold ${
+                  className={`relative z-10 rounded-md px-3 py-2 text-sm font-bold shadow-[inset_0_1px_0_rgba(255,255,255,0.07)] ${
                     index === 3
                       ? "bg-emerald-300/15 text-emerald-100"
                       : index === 4
@@ -1256,7 +1289,8 @@ function SectionHeading({
   title: string;
 }) {
   return (
-    <div>
+    <div className="relative">
+      <div className="mb-4 h-1 w-16 rounded-full bg-gradient-to-r from-cyan-200 via-violet-300 to-emerald-300" />
       <p className="text-sm font-black uppercase tracking-[0.18em] text-cyan-200">{eyebrow}</p>
       <h2 className="mt-4 max-w-3xl text-balance text-3xl font-black text-white sm:text-4xl">
         {title}
@@ -1284,14 +1318,14 @@ function DiagnosticView({
   const progress = ((currentStep + 1) / 10) * 100;
 
   return (
-    <main id="diagnostico" className="min-h-[calc(100vh-74px)] bg-[#050712] py-8 sm:py-12">
-      <div className="mx-auto max-w-4xl px-5 sm:px-6 lg:px-8">
-        <div className="mb-6">
+    <main id="diagnostico" className="min-h-[calc(100vh-74px)] bg-[radial-gradient(circle_at_18%_0%,rgba(34,211,238,0.12),transparent_30%),radial-gradient(circle_at_88%_18%,rgba(124,77,255,0.14),transparent_28%)] py-8 sm:py-12">
+      <div className="mx-auto max-w-5xl px-5 sm:px-6 lg:px-8">
+        <div className="mb-6 glass-card rounded-lg p-4">
           <div className="flex items-center justify-between gap-4 text-sm font-bold text-slate-300">
             <span>Diagnóstico interativo</span>
             <span>{currentStep + 1} de 10</span>
           </div>
-          <div className="mt-3 h-2 rounded-full bg-white/10" aria-hidden="true">
+          <div className="mt-3 h-2 rounded-full bg-white/10 ring-1 ring-white/10" aria-hidden="true">
             <div
               className="h-2 rounded-full bg-gradient-to-r from-cyan-300 via-violet-300 to-emerald-300 transition-all duration-300"
               style={{ width: `${progress}%` }}
@@ -1299,7 +1333,7 @@ function DiagnosticView({
           </div>
         </div>
 
-        <section className="rounded-xl border border-white/12 bg-white/[0.06] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.28)] backdrop-blur-xl sm:p-8">
+        <section className="glass-panel rounded-xl p-5 sm:p-8">
           {renderDiagnosticStep(currentStep, answers, onUpdate)}
 
           {error ? (
@@ -1312,14 +1346,14 @@ function DiagnosticView({
             <button
               type="button"
               onClick={onBack}
-              className="rounded-lg border border-white/14 px-5 py-3 text-sm font-black text-white transition hover:border-cyan-300/60 hover:text-cyan-100"
+              className="secondary-action rounded-lg px-5 py-3 text-sm font-black transition"
             >
               Voltar
             </button>
             <button
               type="button"
               onClick={onNext}
-              className="rounded-lg bg-emerald-300 px-5 py-3 text-sm font-black text-slate-950 transition hover:bg-cyan-200"
+              className="primary-action rounded-lg px-5 py-3 text-sm font-black transition"
             >
               {currentStep === 9 ? "Gerar meu mapa" : "Continuar"}
             </button>
@@ -1628,10 +1662,10 @@ function OptionButton({
     <button
       type="button"
       onClick={onClick}
-      className={`min-h-14 rounded-lg border px-4 py-3 text-left text-sm font-bold transition ${
+      className={`focus-ring min-h-14 rounded-lg border px-4 py-3 text-left text-sm font-bold transition ${
         selected
-          ? "border-emerald-300 bg-emerald-300/14 text-emerald-50 shadow-[0_0_0_1px_rgba(110,231,183,0.25)]"
-          : "border-white/12 bg-slate-950/55 text-slate-200 hover:border-cyan-300/60 hover:bg-cyan-300/8"
+          ? "border-emerald-200/70 bg-emerald-300/16 text-emerald-50 shadow-[0_0_0_1px_rgba(86,246,176,0.28),0_18px_50px_rgba(16,185,129,0.12)]"
+          : "border-white/12 bg-slate-950/58 text-slate-200 hover:border-cyan-200/60 hover:bg-cyan-300/10"
       }`}
       aria-pressed={selected}
     >
@@ -1642,10 +1676,10 @@ function OptionButton({
 
 function ProcessingView({ step }: { step: number }) {
   return (
-    <main className="grid min-h-[calc(100vh-74px)] place-items-center bg-[#050712] px-5 py-16">
-      <section className="w-full max-w-2xl rounded-xl border border-white/12 bg-white/[0.06] p-8 text-center shadow-[0_30px_90px_rgba(0,0,0,0.32)]">
-        <div className="mx-auto grid h-20 w-20 place-items-center rounded-full border border-cyan-300/25 bg-cyan-300/10">
-          <div className="h-10 w-10 animate-spin rounded-full border-2 border-cyan-300 border-t-transparent" />
+    <main className="grid min-h-[calc(100vh-74px)] place-items-center bg-[radial-gradient(circle_at_50%_0%,rgba(124,77,255,0.18),transparent_30%),#030711] px-5 py-16">
+      <section className="glass-panel w-full max-w-2xl rounded-xl p-8 text-center">
+        <div className="signal-pulse mx-auto grid h-20 w-20 place-items-center rounded-full border border-cyan-200/35 bg-cyan-300/10 shadow-[0_0_70px_rgba(34,211,238,0.22)]">
+          <div className="h-10 w-10 animate-spin rounded-full border-2 border-cyan-200 border-t-transparent" />
         </div>
         <p className="mt-8 text-sm font-black uppercase tracking-[0.2em] text-cyan-200">
           Gerando mapa
@@ -1659,8 +1693,8 @@ function ProcessingView({ step }: { step: number }) {
               key={message}
               className={`rounded-lg border px-4 py-3 text-sm font-bold transition ${
                 index <= step
-                  ? "border-emerald-300/30 bg-emerald-300/10 text-emerald-100"
-                  : "border-white/10 bg-white/[0.03] text-slate-500"
+                  ? "border-emerald-200/35 bg-emerald-300/12 text-emerald-50"
+                  : "border-white/10 bg-white/[0.035] text-slate-500"
               }`}
             >
               {message}
@@ -1684,7 +1718,7 @@ function HistoryView({
   onRemove: (id: string) => void;
 }) {
   return (
-    <main className="min-h-[calc(100vh-74px)] bg-[#050712] py-10">
+    <main className="min-h-[calc(100vh-74px)] bg-transparent py-10">
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <SectionHeading
@@ -1695,14 +1729,14 @@ function HistoryView({
           <button
             type="button"
             onClick={onBack}
-            className="rounded-lg border border-white/14 px-4 py-3 text-sm font-black text-white transition hover:border-cyan-300/60"
+            className="secondary-action rounded-lg px-4 py-3 text-sm font-black transition"
           >
             Voltar
           </button>
         </div>
 
         {history.length === 0 ? (
-          <div className="mt-10 rounded-xl border border-white/10 bg-white/[0.045] p-8 text-slate-300">
+          <div className="glass-card mt-10 rounded-xl p-8 text-slate-300">
             Nenhum mapa salvo ainda. Conclua um diagnóstico ou carregue a demonstração de clínica.
           </div>
         ) : (
@@ -1710,7 +1744,7 @@ function HistoryView({
             {history.map((item) => (
               <article
                 key={item.id}
-                className="rounded-xl border border-white/10 bg-white/[0.045] p-5"
+                className="glass-card rounded-xl p-5"
               >
                 <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
                   <div>
@@ -1729,14 +1763,14 @@ function HistoryView({
                     <button
                       type="button"
                       onClick={() => onOpen(item)}
-                      className="rounded-lg bg-emerald-300 px-4 py-3 text-sm font-black text-slate-950 transition hover:bg-cyan-200"
+                      className="primary-action rounded-lg px-4 py-3 text-sm font-black transition"
                     >
                       Abrir mapa
                     </button>
                     <button
                       type="button"
                       onClick={() => downloadJson(`historico-${item.companyName}.json`, item)}
-                      className="rounded-lg border border-white/14 px-4 py-3 text-sm font-black text-white transition hover:border-cyan-300/60"
+                      className="secondary-action rounded-lg px-4 py-3 text-sm font-black transition"
                     >
                       Exportar
                     </button>
@@ -1798,7 +1832,7 @@ function AdminView({
   useEffect(() => setIntegrationDraft(integrationSettings), [integrationSettings]);
 
   return (
-    <main className="min-h-[calc(100vh-74px)] bg-[#050712] py-10">
+    <main className="min-h-[calc(100vh-74px)] bg-transparent py-10">
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <SectionHeading
@@ -1809,14 +1843,14 @@ function AdminView({
           <button
             type="button"
             onClick={onBack}
-            className="rounded-lg border border-white/14 px-4 py-3 text-sm font-black text-white transition hover:border-cyan-300/60"
+            className="secondary-action rounded-lg px-4 py-3 text-sm font-black transition"
           >
             Voltar
           </button>
         </div>
 
         <div className="mt-10 grid gap-6 lg:grid-cols-2">
-          <section className="rounded-xl border border-white/10 bg-white/[0.045] p-5">
+          <section className="glass-card rounded-xl p-5">
             <h2 className="text-2xl font-black text-white">Workspace e auth</h2>
             <p className="mt-3 text-sm leading-6 text-slate-300">
               Dados salvos localmente. Quando houver Supabase, esta estrutura vira perfil
@@ -1861,14 +1895,14 @@ function AdminView({
               <button
                 type="button"
                 onClick={() => onSaveWorkspace(workspaceDraft)}
-                className="rounded-lg bg-emerald-300 px-4 py-3 text-sm font-black text-slate-950 transition hover:bg-cyan-200"
+                className="primary-action rounded-lg px-4 py-3 text-sm font-black transition"
               >
                 Salvar workspace
               </button>
             </div>
           </section>
 
-          <section className="rounded-xl border border-white/10 bg-white/[0.045] p-5">
+          <section className="glass-card rounded-xl p-5">
             <h2 className="text-2xl font-black text-white">Integrações</h2>
             <p className="mt-3 text-sm leading-6 text-slate-300">
               O MVP não envia dados externos sem configuração. Estes campos preparam
@@ -1909,7 +1943,7 @@ function AdminView({
               <button
                 type="button"
                 onClick={() => onSaveIntegrations(integrationDraft)}
-                className="rounded-lg bg-emerald-300 px-4 py-3 text-sm font-black text-slate-950 transition hover:bg-cyan-200"
+                className="primary-action rounded-lg px-4 py-3 text-sm font-black transition"
               >
                 Salvar integrações
               </button>
@@ -1917,7 +1951,7 @@ function AdminView({
           </section>
         </div>
 
-        <section className="mt-6 rounded-xl border border-white/10 bg-white/[0.045] p-5">
+        <section className="glass-card mt-6 rounded-xl p-5">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <h2 className="text-2xl font-black text-white">Editor de catálogo</h2>
@@ -1934,7 +1968,7 @@ function AdminView({
                   custom: customCatalog,
                 })
               }
-              className="rounded-lg border border-white/14 px-4 py-3 text-sm font-black text-white transition hover:border-cyan-300/60"
+              className="secondary-action rounded-lg px-4 py-3 text-sm font-black transition"
             >
               Exportar catálogo
             </button>
@@ -1983,7 +2017,7 @@ function AdminView({
           <button
             type="button"
             onClick={onAddCatalogItem}
-            className="mt-5 rounded-lg bg-emerald-300 px-4 py-3 text-sm font-black text-slate-950 transition hover:bg-cyan-200"
+            className="primary-action mt-5 rounded-lg px-4 py-3 text-sm font-black transition"
           >
             Adicionar ao motor local
           </button>
@@ -2091,12 +2125,12 @@ function DashboardView({
   );
 
   return (
-    <main className="bg-[#050712]">
-      <section className="border-b border-white/10 bg-[radial-gradient(circle_at_15%_0%,rgba(34,211,238,0.17),transparent_32%),radial-gradient(circle_at_86%_10%,rgba(110,231,183,0.12),transparent_28%),#050712] py-10 print:bg-white">
+    <main className="bg-transparent">
+      <section className="border-b border-white/10 bg-[radial-gradient(circle_at_15%_0%,rgba(34,211,238,0.18),transparent_32%),radial-gradient(circle_at_86%_10%,rgba(86,246,176,0.12),transparent_28%),linear-gradient(180deg,rgba(3,7,18,0.45),rgba(3,7,18,0.86))] py-10 print:bg-white">
         <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.18em] text-cyan-200 print:text-slate-700">
+              <p className="brand-pill inline-flex rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.18em] print:border-slate-300 print:bg-white print:text-slate-700">
                 Dashboard de resultados
               </p>
               <h1 className="mt-4 text-balance text-3xl font-black text-white print:text-slate-950 sm:text-5xl">
@@ -2106,7 +2140,7 @@ function DashboardView({
                 {report.executiveSummary}
               </p>
             </div>
-            <div className="no-print flex flex-wrap gap-2">
+            <div className="no-print flex flex-wrap gap-2 lg:justify-end">
               <ActionButton onClick={onCopy}>Copiar resumo</ActionButton>
               <ActionButton onClick={onExportJson}>Exportar JSON</ActionButton>
               <ActionButton onClick={onPrint}>Imprimir ou PDF</ActionButton>
@@ -2152,7 +2186,7 @@ function DashboardView({
         </div>
       </section>
 
-      <section className="border-y border-white/10 bg-[#07101f] py-10">
+      <section className="border-y border-white/10 bg-[#07101f]/82 py-10">
         <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <SectionHeading
@@ -2164,7 +2198,7 @@ function DashboardView({
           </div>
 
           {filteredOpportunities.length === 0 ? (
-            <div className="mt-8 rounded-lg border border-white/10 bg-white/[0.045] p-6 text-slate-300">
+            <div className="glass-card mt-8 rounded-lg p-6 text-slate-300">
               Nenhuma oportunidade encontrada com esses filtros.
             </div>
           ) : (
@@ -2184,7 +2218,7 @@ function DashboardView({
         </div>
       </section>
 
-      <section className="bg-[#050712] py-12">
+      <section className="bg-transparent py-12">
         <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
           <SectionHeading
             eyebrow="Plano de ação"
@@ -2207,7 +2241,7 @@ function ActionButton({ children, onClick }: { children: React.ReactNode; onClic
     <button
       type="button"
       onClick={onClick}
-      className="rounded-lg border border-white/14 bg-white/[0.045] px-4 py-3 text-sm font-black text-white transition hover:border-cyan-300/60 hover:text-cyan-100"
+      className="secondary-action rounded-lg px-4 py-3 text-sm font-black transition"
     >
       {children}
     </button>
@@ -2216,7 +2250,7 @@ function ActionButton({ children, onClick }: { children: React.ReactNode; onClic
 
 function MetricCard({ label, value }: { label: string; value: string }) {
   return (
-    <article className="rounded-lg border border-white/10 bg-white/[0.06] p-5 print:border-slate-200 print:bg-white">
+    <article className="glass-card rounded-lg p-5 print:border-slate-200 print:bg-white">
       <p className="text-sm font-bold text-slate-400 print:text-slate-600">{label}</p>
       <p className="mt-3 text-2xl font-black text-white print:text-slate-950">{value}</p>
     </article>
@@ -2227,7 +2261,7 @@ function VisualMap({ report }: { report: OpportunityMap }) {
   const topOpportunities = report.opportunities.slice(0, 3);
 
   return (
-    <section className="rounded-xl border border-white/10 bg-white/[0.045] p-5 sm:p-6 print:border-slate-200 print:bg-white">
+    <section className="glass-panel rounded-xl p-5 sm:p-6 print:border-slate-200 print:bg-white">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-sm font-black uppercase tracking-[0.16em] text-cyan-200 print:text-slate-700">
@@ -2243,7 +2277,7 @@ function VisualMap({ report }: { report: OpportunityMap }) {
         {topOpportunities.map((opportunity) => (
           <div
             key={opportunity.id}
-            className="grid gap-2 rounded-lg border border-white/10 bg-slate-950/45 p-3 sm:grid-cols-5 print:border-slate-200 print:bg-slate-50"
+            className="map-lane grid gap-2 rounded-lg border border-white/10 bg-slate-950/50 p-3 sm:grid-cols-5 print:border-slate-200 print:bg-slate-50"
           >
             <MapCell label="Problema" value={opportunity.problem} />
             <MapCell label="Oportunidade" value={opportunity.title} />
@@ -2286,7 +2320,7 @@ function MapCell({
 
 function Bottlenecks({ report }: { report: OpportunityMap }) {
   return (
-    <section className="rounded-xl border border-white/10 bg-white/[0.045] p-5 sm:p-6 print:border-slate-200 print:bg-white">
+    <section className="glass-card rounded-xl p-5 sm:p-6 print:border-slate-200 print:bg-white">
       <h2 className="text-2xl font-black text-white print:text-slate-950">
         Principais gargalos
       </h2>
@@ -2294,7 +2328,7 @@ function Bottlenecks({ report }: { report: OpportunityMap }) {
         {report.bottlenecks.map((bottleneck) => (
           <div
             key={bottleneck}
-            className="rounded-lg border border-white/10 bg-white/[0.04] p-4 text-sm font-bold leading-6 text-slate-200 print:border-slate-200 print:bg-slate-50 print:text-slate-800"
+            className="rounded-lg border border-white/10 bg-slate-950/38 p-4 text-sm font-bold leading-6 text-slate-200 print:border-slate-200 print:bg-slate-50 print:text-slate-800"
           >
             {bottleneck}
           </div>
@@ -2306,12 +2340,12 @@ function Bottlenecks({ report }: { report: OpportunityMap }) {
 
 function ImpactEffortChart({ opportunities }: { opportunities: RecommendedOpportunity[] }) {
   return (
-    <section className="rounded-xl border border-white/10 bg-white/[0.045] p-5 sm:p-6 print:border-slate-200 print:bg-white">
+    <section className="glass-card rounded-xl p-5 sm:p-6 print:border-slate-200 print:bg-white">
       <h2 className="text-2xl font-black text-white print:text-slate-950">
         Impacto versus esforço
       </h2>
       <div
-        className="relative mt-6 h-72 rounded-lg border border-white/10 bg-slate-950/55 p-4 print:border-slate-200 print:bg-slate-50"
+        className="relative mt-6 h-72 overflow-hidden rounded-lg border border-white/10 bg-[radial-gradient(circle_at_70%_25%,rgba(86,246,176,0.13),transparent_28%),rgba(2,6,18,0.65)] p-4 print:border-slate-200 print:bg-slate-50"
         role="img"
         aria-label="Gráfico de impacto versus esforço das oportunidades"
       >
@@ -2364,7 +2398,7 @@ function LeadCapturePanel({
   return (
     <form
       onSubmit={onSubmit}
-      className="no-print rounded-xl border border-emerald-300/20 bg-emerald-300/[0.07] p-5"
+      className="glass-card no-print rounded-xl p-5"
     >
       <h2 className="text-xl font-black text-white">Liberar relatório completo</h2>
       <p className="mt-3 text-sm leading-6 text-slate-300">
@@ -2392,14 +2426,14 @@ function LeadCapturePanel({
       </label>
       <button
         type="submit"
-        className="mt-5 w-full rounded-lg bg-emerald-300 px-4 py-3 text-sm font-black text-slate-950 transition hover:bg-cyan-200"
+        className="primary-action mt-5 w-full rounded-lg px-4 py-3 text-sm font-black transition"
       >
         Liberar e salvar contato
       </button>
       <button
         type="button"
         onClick={onSkip}
-        className="mt-3 w-full rounded-lg border border-white/12 px-4 py-3 text-sm font-black text-white transition hover:border-cyan-300/60"
+        className="secondary-action mt-3 w-full rounded-lg px-4 py-3 text-sm font-black transition"
       >
         Ver sem informar
       </button>
@@ -2409,7 +2443,7 @@ function LeadCapturePanel({
 
 function Assumptions({ assumptions }: { assumptions: string[] }) {
   return (
-    <section className="rounded-xl border border-white/10 bg-white/[0.045] p-5 print:border-slate-200 print:bg-white">
+    <section className="glass-card rounded-xl p-5 print:border-slate-200 print:bg-white">
       <h2 className="text-xl font-black text-white print:text-slate-950">Premissas</h2>
       <ul className="mt-4 grid gap-3 text-sm leading-6 text-slate-300 print:text-slate-700">
         {assumptions.map((assumption) => (
@@ -2425,7 +2459,7 @@ function Assumptions({ assumptions }: { assumptions: string[] }) {
 
 function AiBriefPanel({ aiBrief }: { aiBrief: NonNullable<OpportunityMap["aiBrief"]> }) {
   return (
-    <section className="rounded-xl border border-violet-300/20 bg-violet-300/[0.07] p-5 print:border-slate-200 print:bg-white">
+    <section className="glass-card rounded-xl p-5 print:border-slate-200 print:bg-white">
       <p className="text-xs font-black uppercase tracking-[0.14em] text-violet-200 print:text-slate-700">
         Briefing IA
       </p>
@@ -2539,15 +2573,15 @@ function OpportunityCard({
   reportUnlocked: boolean;
 }) {
   return (
-    <article className="rounded-xl border border-white/10 bg-white/[0.05] p-5 print:border-slate-200 print:bg-white sm:p-6">
+    <article className="glass-card focus-ring rounded-xl p-5 print:border-slate-200 print:bg-white sm:p-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div>
+        <div className="min-w-0">
           <div className="flex flex-wrap gap-2">
             <Badge>{opportunity.area}</Badge>
             <Badge>{opportunity.priorityLevel}</Badge>
             <Badge>{opportunity.score}/100</Badge>
           </div>
-          <h3 className="mt-4 text-2xl font-black text-white print:text-slate-950">
+          <h3 className="mt-4 text-balance text-2xl font-black text-white print:text-slate-950">
             {opportunity.title}
           </h3>
           <p className="mt-3 leading-7 text-slate-300 print:text-slate-700">
@@ -2603,14 +2637,14 @@ function OpportunityCard({
         <button
           type="button"
           onClick={() => onInterest({ type: "opportunity", label: opportunity.title })}
-          className="rounded-lg bg-emerald-300 px-4 py-3 text-sm font-black text-slate-950 transition hover:bg-cyan-200"
+          className="primary-action rounded-lg px-4 py-3 text-sm font-black transition"
         >
           Criar esta solução
         </button>
         <button
           type="button"
           onClick={() => onSelect(opportunity)}
-          className="rounded-lg border border-white/14 px-4 py-3 text-sm font-black text-white transition hover:border-violet-300/60 hover:text-violet-100"
+          className="secondary-action rounded-lg px-4 py-3 text-sm font-black transition"
         >
           Ver plano de implementação
         </button>
@@ -2621,7 +2655,7 @@ function OpportunityCard({
 
 function Badge({ children }: { children: React.ReactNode }) {
   return (
-    <span className="rounded-lg border border-white/12 bg-white/[0.055] px-3 py-1.5 text-xs font-black text-slate-200 print:border-slate-200 print:bg-slate-50 print:text-slate-700">
+    <span className="rounded-lg border border-white/12 bg-white/[0.065] px-3 py-1.5 text-xs font-black text-slate-200 print:border-slate-200 print:bg-slate-50 print:text-slate-700">
       {children}
     </span>
   );
@@ -2629,7 +2663,7 @@ function Badge({ children }: { children: React.ReactNode }) {
 
 function MiniStat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-white/10 bg-slate-950/45 p-3 print:border-slate-200 print:bg-slate-50">
+    <div className="rounded-lg border border-white/10 bg-slate-950/52 p-3 print:border-slate-200 print:bg-slate-50">
       <p className="text-xs font-black uppercase tracking-[0.12em] text-slate-500">{label}</p>
       <p className="mt-1 font-black text-white print:text-slate-950">{value}</p>
     </div>
@@ -2638,7 +2672,7 @@ function MiniStat({ label, value }: { label: string; value: string }) {
 
 function InfoBlock({ text, title }: { text: string; title: string }) {
   return (
-    <div className="rounded-lg border border-white/10 bg-white/[0.035] p-4 print:border-slate-200 print:bg-slate-50">
+    <div className="rounded-lg border border-white/10 bg-slate-950/34 p-4 print:border-slate-200 print:bg-slate-50">
       <p className="text-xs font-black uppercase tracking-[0.12em] text-slate-400">{title}</p>
       <p className="mt-2 text-sm leading-6 text-slate-300 print:text-slate-700">{text}</p>
     </div>
@@ -2647,7 +2681,7 @@ function InfoBlock({ text, title }: { text: string; title: string }) {
 
 function PlanCard({ items, title }: { items: string[]; title: string }) {
   return (
-    <article className="rounded-xl border border-white/10 bg-white/[0.045] p-5 print:border-slate-200 print:bg-white">
+    <article className="glass-card rounded-xl p-5 print:border-slate-200 print:bg-white">
       <h3 className="text-2xl font-black text-white print:text-slate-950">{title}</h3>
       <ul className="mt-5 grid gap-3 text-sm leading-6 text-slate-300 print:text-slate-700">
         {items.map((item) => (
@@ -2679,7 +2713,7 @@ function OpportunityModal({
       aria-modal="true"
       aria-labelledby="opportunity-title"
     >
-      <div className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-xl border border-white/12 bg-[#08111f] p-5 shadow-[0_30px_120px_rgba(0,0,0,0.5)] sm:p-7">
+      <div className="glass-panel max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-xl p-5 sm:p-7">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-sm font-black uppercase tracking-[0.16em] text-cyan-200">
@@ -2692,7 +2726,7 @@ function OpportunityModal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg border border-white/14 px-3 py-2 text-sm font-black text-white transition hover:border-cyan-300/60"
+            className="secondary-action rounded-lg px-3 py-2 text-sm font-black transition"
             aria-label="Fechar detalhe"
           >
             Fechar
@@ -2709,7 +2743,7 @@ function OpportunityModal({
         <DetailList title="Etapas de implementação" items={opportunity.implementationSteps} />
         <DetailList title="Riscos e cuidados" items={opportunity.risks} />
 
-        <div className="mt-6 rounded-lg border border-white/10 bg-slate-950/55 p-5">
+        <div className="mt-6 rounded-lg border border-white/10 bg-slate-950/55 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
           <p className="text-sm font-black uppercase tracking-[0.12em] text-slate-400">
             Prompt inicial
           </p>
@@ -2718,7 +2752,7 @@ function OpportunityModal({
           </p>
         </div>
 
-        <div className="mt-6 rounded-lg border border-emerald-300/20 bg-emerald-300/[0.07] p-5">
+        <div className="mt-6 rounded-lg border border-emerald-200/24 bg-emerald-300/[0.08] p-5">
           <p className="text-sm font-black uppercase tracking-[0.12em] text-emerald-200">
             Próximo passo
           </p>
@@ -2729,14 +2763,14 @@ function OpportunityModal({
           <button
             type="button"
             onClick={() => onInterest({ type: "implementation", label: opportunity.title })}
-            className="rounded-lg bg-emerald-300 px-5 py-3 text-sm font-black text-slate-950 transition hover:bg-cyan-200"
+            className="primary-action rounded-lg px-5 py-3 text-sm font-black transition"
           >
             Quero implementar esta oportunidade
           </button>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg border border-white/14 px-5 py-3 text-sm font-black text-white transition hover:border-violet-300/60"
+            className="secondary-action rounded-lg px-5 py-3 text-sm font-black transition"
           >
             Voltar ao mapa
           </button>
@@ -2822,7 +2856,7 @@ function InterestModal({
       aria-modal="true"
       aria-labelledby="interest-title"
     >
-      <div className="w-full max-w-lg rounded-xl border border-white/12 bg-[#08111f] p-6 shadow-[0_30px_120px_rgba(0,0,0,0.5)]">
+      <div className="glass-panel w-full max-w-lg rounded-xl p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-sm font-black uppercase tracking-[0.16em] text-cyan-200">
@@ -2835,7 +2869,7 @@ function InterestModal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg border border-white/14 px-3 py-2 text-sm font-black text-white"
+            className="secondary-action rounded-lg px-3 py-2 text-sm font-black"
           >
             Fechar
           </button>
@@ -2853,7 +2887,7 @@ function InterestModal({
                 href={whatsappHref}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-4 inline-flex rounded-lg bg-emerald-300 px-4 py-3 text-sm font-black text-slate-950 transition hover:bg-cyan-200"
+                className="primary-action mt-4 inline-flex rounded-lg px-4 py-3 text-sm font-black transition"
               >
                 Abrir WhatsApp configurado
               </a>
@@ -2890,7 +2924,7 @@ function InterestModal({
             </label>
             <button
               type="submit"
-              className="rounded-lg bg-emerald-300 px-4 py-3 text-sm font-black text-slate-950 transition hover:bg-cyan-200"
+              className="primary-action rounded-lg px-4 py-3 text-sm font-black transition"
             >
               Entrar na lista
             </button>
@@ -2903,7 +2937,7 @@ function InterestModal({
 
 function Footer() {
   return (
-    <footer className="border-t border-white/10 bg-[#050712] py-10 print:hidden">
+    <footer className="border-t border-white/10 bg-[#030711]/88 py-10 print:hidden">
       <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 text-sm text-slate-400 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
         <p className="font-black tracking-[0.16em] text-white">INEMA.AI MAP</p>
         <p>
