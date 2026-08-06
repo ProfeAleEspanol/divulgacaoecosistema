@@ -199,6 +199,30 @@ textarea:focus {
   border-radius: 10px;
 }
 
+.mobile-nav {
+  background: #0f1419;
+}
+
+.mobile-nav-link {
+  display: block;
+  width: 100%;
+  border-bottom: 1px solid rgba(45, 53, 72, 0.7);
+  padding: 0.85rem 0.25rem;
+  color: var(--foreground);
+  text-align: left;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.mobile-nav-link:last-child {
+  border-bottom: 0;
+}
+
+.mobile-nav-link:hover,
+.mobile-nav-link:focus-visible {
+  color: var(--inema-blue);
+}
+
 .inema-home {
   background: var(--background);
 }

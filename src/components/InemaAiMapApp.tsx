@@ -861,6 +861,12 @@ function Header({
   onRestore: () => void;
   onStart: () => void;
 }) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  function closeMobileMenu() {
+    setMobileMenuOpen(false);
+  }
+
   return (
     <header className="inema-header sticky top-0 z-40 print:hidden">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-5 py-3 sm:px-6 lg:px-8">
@@ -883,13 +889,13 @@ function Header({
         </a>
 
         <nav className="inema-header-nav hidden items-center gap-6 text-sm font-semibold text-slate-300 md:flex">
-          <a href="#como-funciona" className="quiet-link transition">
+          <a href="#como-funciona" className="quiet-link transition" onClick={closeMobileMenu}>
             Como funciona
           </a>
-          <button type="button" onClick={onHistory} className="quiet-link transition">
+          <button type="button" onClick={() => { closeMobileMenu(); onHistory(); }} className="quiet-link transition">
             Histórico{historyCount > 0 ? ` (${historyCount})` : ""}
           </button>
-          <button type="button" onClick={onAdmin} className="quiet-link transition">
+          <button type="button" onClick={() => { closeMobileMenu(); onAdmin(); }} className="quiet-link transition">
             Admin
           </button>
         </nav>
@@ -913,13 +919,38 @@ function Header({
           </button>
           <button
             type="button"
-            onClick={onStart}
+            onClick={() => { closeMobileMenu(); onStart(); }}
             className="primary-action rounded-lg px-4 py-2 text-sm font-black transition"
           >
             Criar meu mapa
           </button>
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen((open) => !open)}
+            className="secondary-action grid h-10 w-10 place-items-center rounded-lg text-lg font-black md:hidden"
+            aria-label={mobileMenuOpen ? "Fechar menu" : "Abrir menu"}
+            aria-expanded={mobileMenuOpen}
+          >
+            {mobileMenuOpen ? "×" : "☰"}
+          </button>
         </div>
       </div>
+      {mobileMenuOpen ? (
+        <nav className="mobile-nav border-t border-white/10 px-5 py-3 md:hidden" aria-label="Menu principal">
+          <a href="#como-funciona" onClick={closeMobileMenu} className="mobile-nav-link">
+            Como funciona
+          </a>
+          <button type="button" onClick={() => { closeMobileMenu(); onHistory(); }} className="mobile-nav-link">
+            Histórico{historyCount > 0 ? ` (${historyCount})` : ""}
+          </button>
+          <button type="button" onClick={() => { closeMobileMenu(); onAdmin(); }} className="mobile-nav-link">
+            Admin
+          </button>
+          <button type="button" onClick={() => { closeMobileMenu(); onDemo(); }} className="mobile-nav-link">
+            Ver demonstração
+          </button>
+        </nav>
+      ) : null}
     </header>
   );
 }
